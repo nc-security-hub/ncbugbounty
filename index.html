@@ -1,235 +1,1197 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NCSOFT Bug Bounty Program</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================
+       CSS 변수 (NCSOFT 브랜드 컬러)
+       ============================ */
+    :root {
+      --nc-red:     #1A3A6B;   /* NCSOFT 시그니처 네이비 (메인 액센트) */
+      --nc-navy:    #1A3A6B;   /* 동일값 — 직관적 참조용 */
+      --nc-navy-bright: #2255A4; /* 호버/강조용 밝은 네이비 */
+      --nc-dark:    #06080F;   /* 배경 기본 (매우 진한 네이비 블랙) */
+      --nc-surface: #0C1120;   /* 카드/섹션 배경 */
+      --nc-border:  #162040;   /* 테두리 */
+      --nc-gray:    #7A8AAE;   /* 보조 텍스트 */
+      --nc-light:   #D8E2F4;   /* 본문 텍스트 */
+      --nc-white:   #FFFFFF;
+      --nc-red-dim: rgba(26,58,107,0.18);
+      --nc-red-glow:rgba(34,85,164,0.45);
+    }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    /* ============================
+       리셋 & 기본
+       ============================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--nc-dark);
+      color: var(--nc-light);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; width: 100%; object-fit: cover; }
 
-<title>NCSOFT Security Bug Bounty</title>
+    /* ============================
+       배경 그리드 패턴
+       ============================ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(26,58,107,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,58,107,0.07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-<style>
+    /* ============================
+       HEADER / NAVBAR
+       ============================ */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--nc-border);
+    }
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#0d0d0d;
-color:#e5e5e5;
-}
+    /* 로고 */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-emblem {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #1A3A6B, #2255A4);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-emblem span {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: 0.05em;
+    }
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .logo-text .brand {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      color: var(--nc-white);
+    }
+    .logo-text .sub {
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      color: var(--nc-red);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
 
-/* HEADER */
+    /* 네비게이션 링크 */
+    nav { display: flex; align-items: center; gap: 4px; }
+    nav a {
+      position: relative;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--nc-gray);
+      transition: color 0.2s;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; left: 16px; right: 16px;
+      height: 1px;
+      background: var(--nc-red);
+      transform: scaleX(0);
+      transition: transform 0.25s ease;
+    }
+    nav a:hover { color: var(--nc-white); }
+    nav a:hover::after { transform: scaleX(1); }
+    nav a.active { color: var(--nc-white); }
+    nav a.active::after { transform: scaleX(1); }
 
-.header{
-background:#000000;
-padding:20px;
-display:flex;
-justify-content:center;
-align-items:center;
-border-bottom:2px solid #1b66ff;
-}
+    .nav-cta {
+      margin-left: 20px;
+      padding: 9px 22px !important;
+      background: var(--nc-red);
+      color: var(--nc-white) !important;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 13px !important;
+      letter-spacing: 0.1em;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: background 0.2s, opacity 0.2s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: #2255A4 !important; opacity: 0.9; }
 
-.logo{
-height:45px;
-}
+    /* 햄버거 (모바일) */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--nc-light);
+      transition: all 0.3s;
+    }
 
-/* HERO */
+    /* ============================
+       HERO 섹션
+       ============================ */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding-top: 68px;
+    }
 
-.hero{
-text-align:center;
-padding:90px 20px;
-background:linear-gradient(180deg,#000000,#0d0d0d);
-}
+    /* 히어로 배경 이미지 */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.18;
+    }
+    /* 배경 위 그라디언트 오버레이 */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(6,8,15,0.97) 40%,
+        rgba(6,8,15,0.6) 70%,
+        rgba(26,58,107,0.15) 100%
+      );
+    }
 
-.hero h1{
-font-size:44px;
-color:#1b66ff;
-margin-bottom:20px;
-}
+    /* 히어로 장식 요소 */
+    .hero-deco {
+      position: absolute;
+      top: 20%; right: 8%;
+      width: 380px; height: 380px;
+      border: 1px solid rgba(26,58,107,0.20);
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      animation: rotateSlow 30s linear infinite;
+      z-index: 1;
+    }
+    .hero-deco::before {
+      content: '';
+      position: absolute;
+      inset: 20px;
+      border: 1px solid rgba(26,58,107,0.12);
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    }
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
 
-.hero p{
-max-width:750px;
-margin:auto;
-font-size:18px;
-line-height:1.7;
-color:#cfcfcf;
-}
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      width: 100%;
+    }
 
-/* SECTION */
+    /* 히어로 태그라인 */
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-tag .line {
+      width: 32px; height: 1px;
+      background: var(--nc-red);
+    }
+    .hero-tag span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--nc-red);
+      text-transform: uppercase;
+    }
 
-.section{
-max-width:1100px;
-margin:auto;
-padding:70px 20px;
-}
+    /* 히어로 메인 제목 */
+    .hero h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: clamp(48px, 7vw, 88px);
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      color: var(--nc-white);
+      margin-bottom: 10px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    .hero h1 .accent {
+      color: var(--nc-red);
+      display: block;
+    }
 
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:30px;
-}
+    .hero-subtitle {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 500;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: 0.08em;
+      color: var(--nc-gray);
+      margin-bottom: 30px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
 
-.card{
-background:#111111;
-border-radius:10px;
-padding:30px;
-box-shadow:0 8px 30px rgba(0,0,0,0.5);
-transition:0.25s;
-border:1px solid #222;
-}
+    .hero-desc {
+      max-width: 520px;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--nc-gray);
+      margin-bottom: 48px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
 
-.card:hover{
-transform:translateY(-8px);
-border:1px solid #1b66ff;
-}
+    /* 히어로 버튼 그룹 */
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: var(--nc-red);
+      color: var(--nc-white);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.25s;
+    }
+    .btn-primary:hover {
+      background: #2255A4;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--nc-red-glow);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border: 1px solid var(--nc-border);
+      color: var(--nc-light);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.1em;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: all 0.25s;
+    }
+    .btn-secondary:hover {
+      border-color: var(--nc-red);
+      color: var(--nc-red);
+      transform: translateY(-2px);
+    }
+    .btn-arrow {
+      font-size: 16px;
+      transition: transform 0.2s;
+    }
+    .btn-primary:hover .btn-arrow,
+    .btn-secondary:hover .btn-arrow {
+      transform: translateX(4px);
+    }
 
-.card img{
-width:100%;
-border-radius:6px;
-margin-bottom:15px;
-}
+    /* 히어로 하단 통계 */
+    .hero-stats {
+      position: absolute;
+      bottom: 48px; left: 0; right: 0;
+      z-index: 2;
+    }
+    .hero-stats-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      gap: 48px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+    .stat-item { display: flex; flex-direction: column; }
+    .stat-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 32px;
+      color: var(--nc-white);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--nc-red); }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--nc-gray);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .stat-divider {
+      width: 1px;
+      background: var(--nc-border);
+      align-self: stretch;
+    }
 
-.card h3{
-color:#1b66ff;
-margin-bottom:10px;
-}
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
-.card p{
-color:#bfbfbf;
-line-height:1.6;
-}
+    /* ============================
+       섹션 공통
+       ============================ */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+    .section-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 100px 40px;
+    }
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .section-label .line { width: 24px; height: 1px; background: var(--nc-red); }
+    .section-label span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--nc-red);
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: clamp(30px, 4vw, 46px);
+      color: var(--nc-white);
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--nc-gray);
+      max-width: 560px;
+    }
 
-/* CONTACT */
+    /* ============================
+       ABOUT 섹션 (프로그램 소개)
+       ============================ */
+    .about { background: var(--nc-surface); border-top: 1px solid var(--nc-border); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      margin-top: 60px;
+    }
+    .about-image {
+      position: relative;
+    }
+    .about-image img {
+      width: 100%; height: 400px;
+      object-fit: cover;
+      filter: grayscale(20%) brightness(0.85);
+    }
+    /* 이미지 위 레드 테두리 장식 */
+    .about-image::before {
+      content: '';
+      position: absolute;
+      top: -12px; left: -12px;
+      right: 12px; bottom: 12px;
+      border: 1px solid var(--nc-red);
+      opacity: 0.4;
+      z-index: 0;
+    }
+    .about-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--nc-red-dim) 0%, transparent 60%);
+      z-index: 1;
+    }
+    .about-image img { position: relative; z-index: 0; }
 
-.contact{
-background:#111111;
-padding:70px 20px;
-text-align:center;
-border-top:2px solid #1b66ff;
-}
+    .about-text .section-desc { max-width: 100%; margin-bottom: 32px; }
 
-.contact h2{
-color:#1b66ff;
-margin-bottom:20px;
-}
+    /* 특징 리스트 */
+    .feature-list { display: flex; flex-direction: column; gap: 20px; }
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--nc-border);
+      border-left: 2px solid var(--nc-red);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .feature-item:hover {
+      background: var(--nc-red-dim);
+      border-color: var(--nc-red);
+    }
+    .feature-icon {
+      width: 36px; height: 36px;
+      background: var(--nc-red-dim);
+      border: 1px solid rgba(34,85,164,0.40);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .feature-info h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.05em;
+      color: var(--nc-white);
+      margin-bottom: 4px;
+    }
+    .feature-info p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--nc-gray);
+    }
 
-.contact p{
-margin:10px 0;
-}
+    /* ============================
+       HOW IT WORKS 섹션
+       ============================ */
+    .howto { border-top: 1px solid var(--nc-border); }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-top: 60px;
+      position: relative;
+    }
+    /* 스텝 연결선 */
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 36px; left: 12.5%; right: 12.5%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--nc-red), var(--nc-border), var(--nc-red), transparent);
+      z-index: 0;
+    }
+    .step-card {
+      position: relative;
+      z-index: 1;
+      padding: 36px 28px;
+      background: var(--nc-surface);
+      border: 1px solid var(--nc-border);
+      text-align: center;
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .step-card:hover {
+      border-color: var(--nc-red);
+      background: rgba(26,58,107,0.10);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    }
+    .step-num {
+      width: 52px; height: 52px;
+      margin: 0 auto 20px;
+      background: var(--nc-dark);
+      border: 1px solid var(--nc-red);
+      display: flex; align-items: center; justify-content: center;
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    }
+    .step-num span {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--nc-red);
+    }
+    .step-icon { font-size: 28px; margin-bottom: 16px; }
+    .step-card h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.05em;
+      color: var(--nc-white);
+      margin-bottom: 10px;
+    }
+    .step-card p {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--nc-gray);
+    }
 
-.contact a{
-color:#1b66ff;
-text-decoration:none;
-font-weight:bold;
-}
+    /* ============================
+       SCOPE 섹션 (취약점 대상)
+       ============================ */
+    .scope {
+      background: var(--nc-surface);
+      border-top: 1px solid var(--nc-border);
+    }
+    .scope-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 48px;
+    }
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .scope-card {
+      padding: 28px;
+      background: var(--nc-dark);
+      border: 1px solid var(--nc-border);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .scope-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--nc-red);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 0.3s;
+    }
+    .scope-card:hover { border-color: rgba(34,85,164,0.40); transform: translateY(-4px); }
+    .scope-card:hover::before { transform: scaleY(1); }
+    .scope-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      margin-bottom: 16px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .badge-critical { background: rgba(26,58,107,0.20); color: var(--nc-red); border: 1px solid rgba(34,85,164,0.40); }
+    .badge-high     { background: rgba(255,140,0,0.12); color: #FF8C00; border: 1px solid rgba(255,140,0,0.3); }
+    .badge-medium   { background: rgba(255,200,0,0.10); color: #FFCC00; border: 1px solid rgba(255,200,0,0.3); }
+    .badge-low      { background: rgba(0,200,100,0.10); color: #00CC64; border: 1px solid rgba(0,200,100,0.3); }
+    .scope-card h3 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--nc-white);
+      margin-bottom: 8px;
+    }
+    .scope-card p {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--nc-gray);
+      margin-bottom: 16px;
+    }
+    .scope-reward {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--nc-red);
+    }
+    .scope-reward small {
+      font-size: 12px;
+      color: var(--nc-gray);
+      font-weight: 400;
+      margin-left: 4px;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
 
-/* FOOTER */
+    /* ============================
+       CTA 배너 섹션
+       ============================ */
+    .cta-banner {
+      border-top: 1px solid var(--nc-border);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(26,58,107,0.15) 0%, transparent 60%);
+    }
+    .cta-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 80px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-text h2 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: clamp(28px, 4vw, 42px);
+      color: var(--nc-white);
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .cta-text p {
+      font-size: 15px;
+      color: var(--nc-gray);
+      line-height: 1.7;
+    }
+    .cta-actions { display: flex; gap: 16px; flex-shrink: 0; }
 
-.footer{
-background:#000;
-padding:20px;
-text-align:center;
-font-size:14px;
-color:#888;
-}
+    /* ============================
+       FOOTER
+       ============================ */
+    footer {
+      background: var(--nc-surface);
+      border-top: 1px solid var(--nc-border);
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 60px 40px 32px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand p {
+      font-size: 13px;
+      line-height: 1.85;
+      color: var(--nc-gray);
+      margin-top: 16px;
+      max-width: 300px;
+    }
+    .footer-col h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      color: var(--nc-white);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a {
+      font-size: 13px;
+      color: var(--nc-gray);
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--nc-red); }
 
-</style>
+    .footer-bottom {
+      border-top: 1px solid var(--nc-border);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--nc-gray);
+      letter-spacing: 0.08em;
+    }
+    .footer-bottom p span { color: var(--nc-red); }
 
+    /* ============================
+       스크롤 탑 버튼
+       ============================ */
+    .scroll-top {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      width: 44px; height: 44px;
+      background: var(--nc-red);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      cursor: pointer;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      transform: translateY(16px);
+      font-size: 18px;
+      border: none;
+    }
+    .scroll-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .scroll-top:hover { background: #2255A4; }
+
+    /* ============================
+       모바일 반응형
+       ============================ */
+    @media (max-width: 1024px) {
+      .about-grid { grid-template-columns: 1fr; gap: 48px; }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps-grid::before { display: none; }
+      .scope-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 20px; }
+      nav { display: none; }
+      .hamburger { display: flex; }
+      .hero-content { padding: 60px 20px; }
+      .hero-stats-inner { padding: 0 20px; gap: 24px; }
+      .stat-divider { display: none; }
+      .section-inner { padding: 72px 20px; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .scope-grid { grid-template-columns: 1fr; }
+      .cta-inner { flex-direction: column; text-align: center; }
+      .cta-actions { flex-direction: column; width: 100%; }
+      .footer-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+
+    /* ============================
+       스크롤 페이드인 (JS 연동)
+       ============================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+  </style>
 </head>
-
 <body>
 
-<!-- 로고 -->
+  <!-- ============================
+       HEADER
+       ============================ -->
+  <header>
+    <div class="nav-inner">
+      <!-- 로고 -->
+      <a href="index.html" class="logo">
+        <div class="logo-emblem"><span>NC</span></div>
+        <div class="logo-text">
+          <span class="brand">NCSOFT</span>
+          <span class="sub">Bug Bounty Program</span>
+        </div>
+      </a>
 
-<div class="header">
+      <!-- 메뉴 -->
+      <nav>
+        <a href="index.html" class="active">프로그램 소개</a>
+        <a href="hall-of-fame.html">명예의 전당</a>
+        <a href="policy.html">취약점 대상/정책</a>
+        <a href="report.html" class="nav-cta">취약점 제보</a>
+        <a href="reward.html">보상금 지급</a>
+      </nav>
 
-<!-- NCSOFT 로고 (교체 가능) -->
-<img class="logo" src="images/NCSOFT_CI.png">
+      <!-- 햄버거 (모바일) -->
+      <div class="hamburger" onclick="toggleMenu(this)">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </header>
 
-</div>
+  <!-- ============================
+       HERO
+       ============================ -->
+  <section class="hero">
+    <!-- 배경 이미지 -->
+    <div class="hero-bg">
+      <img src="images/doguri1.jpg" alt="Hero Background" />
+    </div>
 
-<!-- 소개 -->
+    <!-- 장식 헥사곤 -->
+    <div class="hero-deco"></div>
 
-<div class="hero">
+    <!-- 히어로 콘텐츠 -->
+    <div class="hero-content">
+      <div class="hero-tag">
+        <div class="line"></div>
+        <span>NCSOFT Security Initiative</span>
+      </div>
 
-<h1>NCSOFT Bug Bounty Program</h1>
+      <h1>
+        PROTECT
+        <span class="accent">NC WORLD</span>
+      </h1>
 
-<p>
-NCSOFT는 글로벌 게임 서비스의 보안을 강화하기 위해
-보안 연구자들과 협력하고 있습니다.
-버그바운티 프로그램을 통해 발견된 취약점은
-플랫폼과 사용자 보호를 위해 적극적으로 활용됩니다.
-</p>
+      <div class="hero-subtitle">Bug Bounty Program</div>
 
-</div>
+      <p class="hero-desc">
+        NCSOFT의 서비스와 인프라를 더 안전하게 만드는 데 함께해 주세요.
+        발견하신 취약점을 책임감 있게 제보해 주신 보안 연구자분들께
+        감사의 마음을 담아 보상을 드립니다.
+      </p>
 
-<!-- 설명 -->
+      <div class="hero-actions">
+        <a href="report.html" class="btn-primary">
+          취약점 제보하기 <span class="btn-arrow">→</span>
+        </a>
+        <a href="policy.html" class="btn-secondary">
+          정책 확인하기 <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
 
-<div class="section">
+    <!-- 히어로 통계 -->
+    <div class="hero-stats">
+      <div class="hero-stats-inner">
+        <div class="stat-item">
+          <div class="stat-num">1,200<span>+</span></div>
+          <div class="stat-label">처리된 제보 건수</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">₩<span>5억+</span></div>
+          <div class="stat-label">총 보상금 지급액</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">480<span>+</span></div>
+          <div class="stat-label">등록된 연구자</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">72<span>h</span></div>
+          <div class="stat-label">평균 초기 응답 시간</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div class="cards">
+  <!-- ============================
+       ABOUT (프로그램 소개)
+       ============================ -->
+  <section class="about">
+    <div class="section-inner">
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>About Program</span>
+      </div>
+      <h2 class="section-title reveal reveal-delay-1">프로그램 소개</h2>
 
-<div class="card">
+      <div class="about-grid">
+        <!-- 이미지 -->
+        <div class="about-image reveal">
+          <img src="images/doguri1.jpg" alt="Program Introduction" />
+        </div>
 
-<img src="images/doguri1.jpg">
+        <!-- 텍스트 -->
+        <div class="about-text">
+          <p class="section-desc reveal reveal-delay-1">
+            NCSOFT 버그바운티 프로그램은 외부 보안 연구자들과 함께 저희 서비스의
+            취약점을 선제적으로 발견하고 개선하기 위해 운영되고 있습니다.<br /><br />
+            발견하신 모든 유효한 취약점에 대해 심각도에 따른 보상금을 지급하며,
+            뛰어난 연구자분들은 명예의 전당에 기록됩니다.
+          </p>
 
-<h3>취약점 제보</h3>
+          <div class="feature-list">
+            <div class="feature-item reveal reveal-delay-2">
+              <div class="feature-icon">🎯</div>
+              <div class="feature-info">
+                <h4>책임감 있는 공개 (Responsible Disclosure)</h4>
+                <p>발견된 취약점은 저희 팀에 먼저 제보해 주세요. 수정 완료 후 공개 여부를 협의합니다.</p>
+              </div>
+            </div>
+            <div class="feature-item reveal reveal-delay-3">
+              <div class="feature-icon">⚡</div>
+              <div class="feature-info">
+                <h4>신속한 처리 프로세스</h4>
+                <p>제보 접수 후 72시간 이내 초기 응답을 드리며, 검토 진행 상황을 투명하게 공유합니다.</p>
+              </div>
+            </div>
+            <div class="feature-item reveal reveal-delay-4">
+              <div class="feature-icon">💰</div>
+              <div class="feature-info">
+                <h4>경쟁력 있는 보상 체계</h4>
+                <p>취약점 심각도(CVSS)에 따라 최대 수천만 원의 보상금을 지급합니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<p>
-NCSOFT 게임 서비스 및 플랫폼에서 발견한 보안 취약점을 제보해주세요.
-연구자의 참여는 서비스 보안 강화에 큰 도움이 됩니다.
-</p>
+  <!-- ============================
+       HOW IT WORKS
+       ============================ -->
+  <section class="howto">
+    <div class="section-inner">
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>How It Works</span>
+      </div>
+      <h2 class="section-title reveal reveal-delay-1">제보 프로세스</h2>
+      <p class="section-desc reveal reveal-delay-2">
+        아래 4단계를 따라 취약점을 제보하시면 검토 후 보상금을 지급해 드립니다.
+      </p>
 
-</div>
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <div class="step-num"><span>01</span></div>
+          <div class="step-icon">🔍</div>
+          <h3>취약점 발견</h3>
+          <p>정책 범위 내의 NCSOFT 서비스에서 보안 취약점을 발견합니다.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-num"><span>02</span></div>
+          <div class="step-icon">📋</div>
+          <h3>제보서 작성</h3>
+          <p>재현 가능한 PoC와 영향 범위를 포함하여 제보서를 작성합니다.</p>
+        </div>
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-num"><span>03</span></div>
+          <div class="step-icon">🔬</div>
+          <h3>검토 및 검증</h3>
+          <p>보안팀이 제보 내용을 검토하고 취약점을 검증합니다. (최대 30일)</p>
+        </div>
+        <div class="step-card reveal reveal-delay-3">
+          <div class="step-num"><span>04</span></div>
+          <div class="step-icon">🏆</div>
+          <h3>보상금 지급</h3>
+          <p>유효한 취약점으로 인정 시 심각도에 따른 보상금을 지급합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div class="card">
+  <!-- ============================
+       SCOPE (취약점 등급)
+       ============================ -->
+  <section class="scope">
+    <div class="section-inner">
+      <div class="scope-header">
+        <div>
+          <div class="section-label reveal">
+            <div class="line"></div>
+            <span>Vulnerability Scope</span>
+          </div>
+          <h2 class="section-title reveal reveal-delay-1">취약점 등급 및 보상</h2>
+          <p class="section-desc reveal reveal-delay-2">
+            CVSS 기반으로 취약점 심각도를 평가하며, 등급에 따라 보상금이 차등 지급됩니다.
+          </p>
+        </div>
+        <a href="policy.html" class="btn-secondary reveal reveal-delay-2">
+          전체 정책 보기 <span class="btn-arrow">→</span>
+        </a>
+      </div>
 
-<img src="images/doguri1.jpg">
+      <div class="scope-grid">
+        <div class="scope-card reveal">
+          <div class="scope-badge badge-critical">● Critical</div>
+          <h3>심각 (Critical)</h3>
+          <p>원격 코드 실행, 전체 시스템 장악, 대규모 개인정보 유출 등 즉각적이고 치명적인 취약점</p>
+          <div class="scope-reward">₩5,000,000 ~ ₩20,000,000<small>이상</small></div>
+        </div>
+        <div class="scope-card reveal reveal-delay-1">
+          <div class="scope-badge badge-high">● High</div>
+          <h3>높음 (High)</h3>
+          <p>권한 상승, 인증 우회, 민감 데이터 노출 등 서비스 운영에 심각한 영향을 미치는 취약점</p>
+          <div class="scope-reward">₩1,000,000 ~ ₩5,000,000</div>
+        </div>
+        <div class="scope-card reveal reveal-delay-2">
+          <div class="scope-badge badge-medium">● Medium</div>
+          <h3>보통 (Medium)</h3>
+          <p>제한적 데이터 노출, 부분적 기능 침해 등 특정 조건에서 보안에 영향을 미치는 취약점</p>
+          <div class="scope-reward">₩200,000 ~ ₩1,000,000</div>
+        </div>
+        <div class="scope-card reveal reveal-delay-3">
+          <div class="scope-badge badge-low">● Low</div>
+          <h3>낮음 (Low)</h3>
+          <p>보안에 미치는 영향이 낮거나 추가 조건이 필요한 취약점</p>
+          <div class="scope-reward">₩50,000 ~ ₩200,000</div>
+        </div>
+        <div class="scope-card reveal reveal-delay-1" style="grid-column: span 2;">
+          <div class="scope-badge badge-critical">🚫 Out of Scope</div>
+          <h3>보상 제외 항목</h3>
+          <p>
+            소셜 엔지니어링 공격 / 서비스 거부(DoS/DDoS) / 물리적 보안 취약점 /
+            제3자 서비스 취약점 / 이미 알려진 공개 취약점 / 자동화 스캐너로만 발견된 취약점 /
+            CVSS 점수 3.9 이하의 정보성 취약점
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<h3>보상 정책</h3>
+  <!-- ============================
+       CTA 배너
+       ============================ -->
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <div class="cta-text reveal">
+        <h2>보안 취약점을 발견하셨나요?<br/>지금 바로 제보해 주세요.</h2>
+        <p>여러분의 제보가 수백만 NCSOFT 사용자를 더 안전하게 만듭니다.</p>
+      </div>
+      <div class="cta-actions reveal reveal-delay-1">
+        <a href="report.html" class="btn-primary">
+          취약점 제보하기 <span class="btn-arrow">→</span>
+        </a>
+        <a href="hall-of-fame.html" class="btn-secondary">
+          명예의 전당 <span class="btn-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
-<p>
-취약점의 심각도와 영향도에 따라 보안 연구자에게
-버그바운티 보상이 지급됩니다.
-</p>
+  <!-- ============================
+       FOOTER
+       ============================ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <!-- 브랜드 -->
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <div class="logo-emblem"><span>NC</span></div>
+            <div class="logo-text">
+              <span class="brand">NCSOFT</span>
+              <span class="sub">Bug Bounty Program</span>
+            </div>
+          </a>
+          <p>
+            NCSOFT 버그바운티 프로그램은 보안 연구자들과의 협력을 통해
+            더 안전한 디지털 환경을 만들어 나갑니다.
+          </p>
+        </div>
 
-</div>
+        <!-- 링크 -->
+        <div class="footer-col">
+          <h4>Program</h4>
+          <ul>
+            <li><a href="index.html">프로그램 소개</a></li>
+            <li><a href="policy.html">취약점 대상/정책</a></li>
+            <li><a href="reward.html">보상금 지급</a></li>
+            <li><a href="hall-of-fame.html">명예의 전당</a></li>
+          </ul>
+        </div>
 
-<div class="card">
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="report.html">취약점 제보</a></li>
+            <li><a href="policy.html#faq">FAQ</a></li>
+            <li><a href="policy.html#rules">제보 가이드라인</a></li>
+          </ul>
+        </div>
 
-<img src="images/doguri1.jpg">
+        <div class="footer-col">
+          <h4>NCSOFT</h4>
+          <ul>
+            <li><a href="https://www.ncsoft.com" target="_blank">공식 홈페이지</a></li>
+            <li><a href="#">개인정보 처리방침</a></li>
+            <li><a href="#">이용약관</a></li>
+          </ul>
+        </div>
+      </div>
 
-<h3>Responsible Disclosure</h3>
+      <div class="footer-bottom">
+        <p>© 2024 <span>NCSOFT Corporation</span>. All rights reserved.</p>
+        <p>Bug Bounty Program v1.0 — <span>Security Team</span></p>
+      </div>
+    </div>
+  </footer>
 
-<p>
-취약점 공개 전 NCSOFT 보안팀과 협력하여
-문제 해결을 진행하는 책임 있는 공개 정책을 따릅니다.
-</p>
+  <!-- 스크롤 탑 버튼 -->
+  <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="맨 위로">↑</button>
 
-</div>
+  <!-- ============================
+       JavaScript
+       ============================ -->
+  <script>
+    // ---- 모바일 메뉴 ----
+    function toggleMenu(btn) {
+      const nav = document.querySelector('nav');
+      nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+      nav.style.flexDirection = 'column';
+      nav.style.position = 'absolute';
+      nav.style.top = '68px';
+      nav.style.left = '0'; nav.style.right = '0';
+      nav.style.background = 'rgba(10,10,15,0.98)';
+      nav.style.padding = '20px';
+      nav.style.borderBottom = '1px solid #1E1E2E';
+    }
 
-</div>
+    // ---- 스크롤 탑 버튼 ----
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 400);
+    });
 
-</div>
-
-<!-- 연락처 -->
-
-<div class="contact">
-
-<h2>Contact</h2>
-
-<p>취약점 제보 및 보안 문의</p>
-
-<p>📧 security@ncsoft.com</p>
-
-<p>담당자: <strong>CCC</strong></p>
-
-</div>
-
-<div class="footer">
-
-© NCSOFT Security Program
-
-</div>
-
+    // ---- 스크롤 페이드인 ----
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
 </body>
 </html>
-
