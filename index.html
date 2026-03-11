@@ -1,73 +1,77 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AAA</title>
+
+<title>NCSOFT Bug Bounty</title>
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family: Arial, Helvetica, sans-serif;
-}
-
 body{
-background:#f5f8fc;
-color:#1a1a1a;
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f5f7fa;
+color:#222;
 }
 
-.container{
-max-width:1200px;
-margin:auto;
-padding:40px 20px;
+/* HEADER */
+
+.header{
+background:#1428A0;
+color:white;
+padding:20px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.logo{
+height:50px;
 }
 
 /* HERO */
 
 .hero{
-background:#0f2a44;
-color:white;
-padding:80px 20px;
 text-align:center;
-border-radius:12px;
-}
-
-.hero img{
-width:160px;
-height:160px;
-border-radius:50%;
-margin-bottom:20px;
-border:5px solid white;
+padding:80px 20px;
+background:white;
 }
 
 .hero h1{
 font-size:42px;
-margin-bottom:10px;
+color:#1428A0;
+margin-bottom:20px;
 }
 
 .hero p{
 font-size:18px;
-opacity:0.9;
+max-width:700px;
+margin:auto;
+line-height:1.6;
 }
 
-/* 소개 카드 */
+/* SECTION */
 
-.card-area{
-margin-top:60px;
+.section{
+max-width:1000px;
+margin:auto;
+padding:60px 20px;
+}
+
+.cards{
 display:grid;
-grid-template-columns:1fr 1fr;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
 gap:30px;
 }
 
 .card{
 background:white;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-transition:0.3s;
+padding:30px;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+transition:0.2s;
 }
 
 .card:hover{
@@ -76,74 +80,40 @@ transform:translateY(-6px);
 
 .card img{
 width:100%;
-height:220px;
-object-fit:cover;
+border-radius:6px;
+margin-bottom:15px;
 }
 
-.card-content{
-padding:25px;
+.card h3{
+color:#1428A0;
 }
 
-.card-content h3{
-color:#0f2a44;
-margin-bottom:10px;
-}
-
-.card-content p{
-color:#555;
-line-height:1.6;
-}
-
-/* 연락처 */
+/* CONTACT */
 
 .contact{
-margin-top:80px;
+background:#1428A0;
+color:white;
 text-align:center;
-background:white;
-padding:50px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+padding:60px 20px;
 }
 
 .contact h2{
-color:#0f2a44;
 margin-bottom:20px;
 }
 
 .contact a{
-display:inline-block;
-margin:10px;
-padding:12px 22px;
-background:#0f2a44;
 color:white;
-border-radius:8px;
+font-weight:bold;
 text-decoration:none;
-transition:0.3s;
 }
 
-.contact a:hover{
-background:#163a5c;
-}
+/* FOOTER */
 
-/* footer */
-
-footer{
+.footer{
 text-align:center;
-margin-top:60px;
-color:#777;
+padding:20px;
 font-size:14px;
-}
-
-@media(max-width:768px){
-
-.card-area{
-grid-template-columns:1fr;
-}
-
-.hero h1{
-font-size:32px;
-}
-
+background:#eee;
 }
 
 </style>
@@ -152,78 +122,74 @@ font-size:32px;
 
 <body>
 
-<div class="container">
+<!-- 로고 영역 -->
+<div class="header">
 
-<!-- HERO 영역 (대표 이미지 교체 위치) -->
+<!-- NCSOFT 로고 (이미지 교체 가능) -->
+<img class="logo" src="images/doguri1.jpg">
+
+</div>
+
+<!-- 버그바운티 소개 -->
+
 <div class="hero">
 
-<img src="images/doguri1.jpg" alt="대표 이미지">
+<h1>NCSOFT Bug Bounty Program</h1>
 
-<h1>AAA</h1>
-
-<p>BBB</p>
+<p>
+엔씨소프트는 글로벌 보안 연구자들과 협력하여 제품과 서비스의 보안을 강화하고 있습니다.
+버그바운티 프로그램을 통해 발견된 보안 취약점은 사용자 보호와 서비스 안정성을 향상시키는 데 중요한 역할을 합니다.
+</p>
 
 </div>
 
-<!-- 이미지 카드 영역 -->
-<div class="card-area">
+
+<!-- 버그바운티 설명 -->
+
+<div class="section">
+
+<div class="cards">
 
 <div class="card">
 
-<!-- 이미지 위치 1 -->
-<img src="images/doguri1.jpg" alt="이미지1">
+<!-- 이미지 예시 (교체 가능) -->
+<img src="images/doguri1.jpg">
 
-<div class="card-content">
-<h3>Example Title</h3>
+<h3>취약점 제보</h3>
+
 <p>
-여기에 원하는 설명을 넣으면 됩니다.  
-이미지는 자유롭게 교체하세요.
+엔씨소프트 제품 및 서비스에서 발견된 보안 취약점을 제보해주세요.
+보안 연구자들의 참여는 삼성 생태계의 안전성을 높이는 데 큰 도움이 됩니다.
 </p>
-</div>
-
-</div>
-
-
-<div class="card">
-
-<!-- 이미지 위치 2 -->
-<img src="images/doguri1.jpg" alt="이미지2">
-
-<div class="card-content">
-<h3>Example Title</h3>
-<p>
-원하는 프로젝트, 소개, 서비스 설명 등을 넣을 수 있습니다.
-</p>
-</div>
 
 </div>
 
 
 <div class="card">
 
-<!-- 이미지 위치 3 -->
-<img src="images/doguri1.jpg" alt="이미지3">
+<img src="images/doguri1.jpg">
 
-<div class="card-content">
-<h3>Example Title</h3>
+<h3>보상 정책</h3>
+
 <p>
-이미지와 텍스트를 자유롭게 수정하세요.
+유효한 취약점으로 확인될 경우 심각도에 따라 버그바운티 보상이 제공됩니다.
+제보된 취약점은 보안팀에서 검토 후 조치됩니다.
 </p>
-</div>
 
 </div>
 
 
 <div class="card">
 
-<!-- 이미지 위치 4 -->
-<img src="images/doguri1.jpg" alt="이미지4">
+<img src="images/doguri1.jpg">
 
-<div class="card-content">
-<h3>Example Title</h3>
+<h3>책임 있는 공개</h3>
+
 <p>
-이 영역은 필요하면 삭제하거나 추가할 수 있습니다.
+취약점 공개 전 엔씨소프트와 협력하여 문제 해결을 진행합니다.
+Responsible Disclosure 정책을 따르는 연구자를 환영합니다.
 </p>
+
 </div>
 
 </div>
@@ -237,17 +203,24 @@ font-size:32px;
 
 <h2>Contact</h2>
 
-<p>CCC</p>
+<p>
+버그바운티 문의 및 취약점 제보
+</p>
 
-<a href="#">Contact Link</a>
+<p>
+📧 security@samsung.com
+</p>
+
+<p>
+또는 보안팀 담당자: <strong>CCC</strong>
+</p>
 
 </div>
 
-<footer>
 
-© 2026 AAA
+<div class="footer">
 
-</footer>
+© NCSOFT Security Program
 
 </div>
 
