@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAA</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#f5f8fc;
+color:#1a1a1a;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:40px 20px;
+}
+
+/* HERO */
+
+.hero{
+background:#0f2a44;
+color:white;
+padding:80px 20px;
+text-align:center;
+border-radius:12px;
+}
+
+.hero img{
+width:160px;
+height:160px;
+border-radius:50%;
+margin-bottom:20px;
+border:5px solid white;
+}
+
+.hero h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.hero p{
+font-size:18px;
+opacity:0.9;
+}
+
+/* 소개 카드 */
+
+.card-area{
+margin-top:60px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+}
+
+.card{
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+}
+
+.card img{
+width:100%;
+height:220px;
+object-fit:cover;
+}
+
+.card-content{
+padding:25px;
+}
+
+.card-content h3{
+color:#0f2a44;
+margin-bottom:10px;
+}
+
+.card-content p{
+color:#555;
+line-height:1.6;
+}
+
+/* 연락처 */
+
+.contact{
+margin-top:80px;
+text-align:center;
+background:white;
+padding:50px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.contact h2{
+color:#0f2a44;
+margin-bottom:20px;
+}
+
+.contact a{
+display:inline-block;
+margin:10px;
+padding:12px 22px;
+background:#0f2a44;
+color:white;
+border-radius:8px;
+text-decoration:none;
+transition:0.3s;
+}
+
+.contact a:hover{
+background:#163a5c;
+}
+
+/* footer */
+
+footer{
+text-align:center;
+margin-top:60px;
+color:#777;
+font-size:14px;
+}
+
+@media(max-width:768px){
+
+.card-area{
+grid-template-columns:1fr;
+}
+
+.hero h1{
+font-size:32px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- HERO 영역 (대표 이미지 교체 위치) -->
+<div class="hero">
+
+<img src="C://Users//chorong//Pictures//1 도구리//doguri1.jpg" alt="대표 이미지">
+
+<h1>AAA</h1>
+
+<p>BBB</p>
+
+</div>
+
+<!-- 이미지 카드 영역 -->
+<div class="card-area">
+
+<div class="card">
+
+<!-- 이미지 위치 1 -->
+<img src="C://Users//chorong//Pictures//1 도구리//doguri1.jpg" alt="이미지1">
+
+<div class="card-content">
+<h3>Example Title</h3>
+<p>
+여기에 원하는 설명을 넣으면 됩니다.  
+이미지는 자유롭게 교체하세요.
+</p>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<!-- 이미지 위치 2 -->
+<img src="C://Users//chorong//Pictures//1 도구리//doguri1.jpg" alt="이미지2">
+
+<div class="card-content">
+<h3>Example Title</h3>
+<p>
+원하는 프로젝트, 소개, 서비스 설명 등을 넣을 수 있습니다.
+</p>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<!-- 이미지 위치 3 -->
+<img src="C://Users//chorong//Pictures//1 도구리//doguri1.jpg" alt="이미지3">
+
+<div class="card-content">
+<h3>Example Title</h3>
+<p>
+이미지와 텍스트를 자유롭게 수정하세요.
+</p>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<!-- 이미지 위치 4 -->
+<img src="C://Users//chorong//Pictures//1 도구리//doguri1.jpg" alt="이미지4">
+
+<div class="card-content">
+<h3>Example Title</h3>
+<p>
+이 영역은 필요하면 삭제하거나 추가할 수 있습니다.
+</p>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- 연락처 -->
+
+<div class="contact">
+
+<h2>Contact</h2>
+
+<p>CCC</p>
+
+<a href="#">Contact Link</a>
+
+</div>
+
+<footer>
+
+© 2026 AAA
+
+</footer>
+
+</div>
+
+</body>
+</html>
