@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>보상금 지급 — NCSOFT Bug Bounty Program</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --nc-navy:        #1A3A6B;
+      --nc-navy-bright: #2255A4;
+      --nc-dark:        #06080F;
+      --nc-surface:     #0C1120;
+      --nc-border:      #162040;
+      --nc-gray:        #7A8AAE;
+      --nc-light:       #D8E2F4;
+      --nc-white:       #FFFFFF;
+      --nc-navy-dim:    rgba(26,58,107,0.18);
+      --nc-navy-glow:   rgba(34,85,164,0.45);
+      --col-critical:   #6B9FFF;
+      --col-high:       #FF8C00;
+      --col-medium:     #FFCC00;
+      --col-low:        #00CC64;
+      --col-info:       #A0A0C0;
+      --col-ok:         #00CC64;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--nc-dark); color: var(--nc-light); font-family: 'Noto Sans KR', sans-serif; font-weight: 300; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(26,58,107,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(26,58,107,0.07) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+
+    /* ============================
+       HEADER
+       ============================ */
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(6,8,15,0.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--nc-border); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; height: 68px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 14px; }
+    .logo-emblem { width: 36px; height: 36px; background: linear-gradient(135deg, #1A3A6B, #2255A4); clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-emblem span { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; color: #fff; letter-spacing: 0.05em; }
+    .logo-text { display: flex; flex-direction: column; line-height: 1; }
+    .logo-text .brand { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.12em; color: var(--nc-white); }
+    .logo-text .sub { font-size: 9px; letter-spacing: 0.25em; color: var(--nc-navy-bright); text-transform: uppercase; margin-top: 2px; }
+    nav { display: flex; align-items: center; gap: 4px; }
+    nav a { position: relative; padding: 8px 16px; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: var(--nc-gray); transition: color 0.2s; }
+    nav a::after { content: ''; position: absolute; bottom: 4px; left: 16px; right: 16px; height: 1px; background: var(--nc-navy); transform: scaleX(0); transition: transform 0.25s ease; }
+    nav a:hover { color: var(--nc-white); }
+    nav a:hover::after { transform: scaleX(1); }
+    nav a.active { color: var(--nc-white); }
+    nav a.active::after { transform: scaleX(1); }
+    .nav-cta { margin-left: 20px; padding: 9px 22px !important; background: var(--nc-navy); color: var(--nc-white) !important; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px !important; letter-spacing: 0.1em; clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition: background 0.2s !important; }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--nc-navy-bright) !important; }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--nc-light); }
+
+    /* ============================
+       PAGE HERO
+       ============================ */
+    .page-hero { position: relative; padding: 140px 40px 80px; overflow: hidden; border-bottom: 1px solid var(--nc-border); }
+    .page-hero-bg { position: absolute; inset: 0; z-index: 0; }
+    .page-hero-bg img { width: 100%; height: 100%; object-fit: cover; opacity: 0.08; }
+    .page-hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,8,15,0.5) 0%, var(--nc-dark) 100%); }
+    .page-hero-ring { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); width: 320px; height: 320px; z-index: 1; }
+    .page-hero-ring::before, .page-hero-ring::after { content: ''; position: absolute; border-radius: 50%; border: 1px solid rgba(26,58,107,0.25); }
+    .page-hero-ring::before { inset: 0; }
+    .page-hero-ring::after { inset: 30px; border-color: rgba(34,85,164,0.15); }
+    .page-hero-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 2; }
+    .page-label { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .page-label .line { width: 32px; height: 1px; background: var(--nc-navy-bright); }
+    .page-label span { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: var(--nc-navy-bright); text-transform: uppercase; }
+    .page-hero h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(40px, 6vw, 72px); line-height: 0.95; letter-spacing: 0.02em; color: var(--nc-white); margin-bottom: 16px; }
+    .page-hero h1 .accent { color: var(--nc-navy-bright); }
+    .page-hero p { font-size: 15px; line-height: 1.85; color: var(--nc-gray); max-width: 580px; }
+
+    /* ============================
+       공통 섹션
+       ============================ */
+    section { position: relative; z-index: 1; }
+    .section-inner { max-width: 1280px; margin: 0 auto; padding: 80px 40px; }
+    .section-label { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .section-label .line { width: 24px; height: 1px; background: var(--nc-navy-bright); }
+    .section-label span { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: var(--nc-navy-bright); text-transform: uppercase; }
+    .section-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(26px, 3.5vw, 40px); color: var(--nc-white); letter-spacing: 0.02em; margin-bottom: 8px; }
+    .section-desc { font-size: 14px; line-height: 1.85; color: var(--nc-gray); margin-bottom: 48px; max-width: 680px; }
+
+    /* ============================
+       PART 1 — 등급별 보상 구간
+       ============================ */
+    .reward-section { border-bottom: 1px solid var(--nc-border); }
+
+    /* 등급 카드 5개 세로 스택 */
+    .grade-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .grade-card {
+      display: grid;
+      grid-template-columns: 180px 1fr 260px;
+      align-items: center;
+      gap: 0;
+      background: var(--nc-surface);
+      border: 1px solid var(--nc-border);
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+      position: relative;
+    }
+    .grade-card:hover { transform: translateX(6px); }
+
+    /* 왼쪽 등급 컬럼 */
+    .grade-left {
+      padding: 28px 24px;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+      border-right: 1px solid var(--nc-border);
+      position: relative; overflow: hidden;
+    }
+    .grade-left::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    }
+    .grade-card.critical .grade-left::before { background: var(--col-critical); }
+    .grade-card.high     .grade-left::before { background: var(--col-high); }
+    .grade-card.medium   .grade-left::before { background: var(--col-medium); }
+    .grade-card.low      .grade-left::before { background: var(--col-low); }
+    .grade-card.info     .grade-left::before { background: var(--col-info); }
+
+    .grade-dot-wrap { display: flex; align-items: center; gap: 8px; }
+    .grade-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .grade-card.critical .grade-dot { background: var(--col-critical); box-shadow: 0 0 8px rgba(107,159,255,0.6); }
+    .grade-card.high     .grade-dot { background: var(--col-high);     box-shadow: 0 0 8px rgba(255,140,0,0.5); }
+    .grade-card.medium   .grade-dot { background: var(--col-medium);   box-shadow: 0 0 8px rgba(255,204,0,0.5); }
+    .grade-card.low      .grade-dot { background: var(--col-low);      box-shadow: 0 0 8px rgba(0,204,100,0.5); }
+    .grade-card.info     .grade-dot { background: var(--col-info); }
+
+    .grade-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; letter-spacing: 0.08em; }
+    .grade-card.critical .grade-name { color: var(--col-critical); }
+    .grade-card.high     .grade-name { color: var(--col-high); }
+    .grade-card.medium   .grade-name { color: var(--col-medium); }
+    .grade-card.low      .grade-name { color: var(--col-low); }
+    .grade-card.info     .grade-name { color: var(--col-info); }
+
+    .grade-cvss {
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 0.12em; color: var(--nc-gray);
+    }
+
+    /* CVSS 바 */
+    .grade-bar-wrap { margin-top: 6px; width: 100%; }
+    .grade-bar-track { width: 100%; height: 3px; background: var(--nc-border); border-radius: 2px; overflow: hidden; }
+    .grade-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+    .grade-card.critical .grade-bar-fill { background: var(--col-critical); width: 100%; }
+    .grade-card.high     .grade-bar-fill { background: var(--col-high);     width: 80%; }
+    .grade-card.medium   .grade-bar-fill { background: var(--col-medium);   width: 56%; }
+    .grade-card.low      .grade-bar-fill { background: var(--col-low);      width: 36%; }
+    .grade-card.info     .grade-bar-fill { background: var(--col-info);     width: 15%; }
+
+    /* 가운데 설명 컬럼 */
+    .grade-mid {
+      padding: 28px 28px;
+      border-right: 1px solid var(--nc-border);
+    }
+    .grade-mid h4 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; color: var(--nc-white); margin-bottom: 8px; letter-spacing: 0.04em; }
+    .grade-mid p { font-size: 13px; color: var(--nc-gray); line-height: 1.75; }
+    .grade-examples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .grade-ex-tag {
+      padding: 3px 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
+      background: rgba(26,58,107,0.15); border: 1px solid rgba(34,85,164,0.2);
+      color: var(--nc-gray);
+    }
+
+    /* 오른쪽 보상 컬럼 */
+    .grade-right {
+      padding: 28px 28px;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+    }
+    .grade-reward-label {
+      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      letter-spacing: 0.2em; color: var(--nc-gray); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .grade-reward-range {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      font-size: 22px; line-height: 1.1;
+    }
+    .grade-card.critical .grade-reward-range { color: var(--col-critical); }
+    .grade-card.high     .grade-reward-range { color: var(--col-high); }
+    .grade-card.medium   .grade-reward-range { color: var(--col-medium); }
+    .grade-card.low      .grade-reward-range { color: var(--col-low); }
+    .grade-card.info     .grade-reward-range { color: var(--col-info); }
+
+    .grade-reward-note { font-size: 11px; color: var(--nc-gray); margin-top: 4px; line-height: 1.6; }
+
+    /* 보상 없음 뱃지 */
+    .no-reward-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; margin-top: 2px;
+      background: rgba(160,160,192,0.08); border: 1px solid rgba(160,160,192,0.2);
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
+      letter-spacing: 0.12em; color: var(--col-info);
+    }
+
+    /* 안내 배너 */
+    .reward-notice-bar {
+      margin-top: 32px; padding: 20px 24px;
+      background: var(--nc-surface); border: 1px solid var(--nc-border);
+      border-left: 3px solid var(--nc-navy-bright);
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .reward-notice-bar .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .reward-notice-bar p { font-size: 13px; color: var(--nc-gray); line-height: 1.8; }
+    .reward-notice-bar p strong { color: var(--nc-light); font-weight: 500; }
+
+    /* ============================
+       PART 2 — 지급 절차
+       ============================ */
+    .process-section {
+      background: var(--nc-surface);
+      border-top: 1px solid var(--nc-border);
+    }
+
+    /* 절차 타임라인 */
+    .timeline { position: relative; margin-top: 48px; }
+    .timeline::before {
+      content: ''; position: absolute;
+      left: 31px; top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(180deg, var(--nc-navy), rgba(26,58,107,0.1));
+    }
+
+    .tl-item {
+      display: flex; gap: 24px; align-items: flex-start;
+      margin-bottom: 8px; position: relative;
+    }
+    .tl-item:last-child { margin-bottom: 0; }
+
+    /* 타임라인 노드 */
+    .tl-node {
+      width: 64px; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      position: relative; z-index: 1;
+    }
+    .tl-circle {
+      width: 40px; height: 40px;
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      background: var(--nc-surface); border: 1px solid var(--nc-navy);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px;
+      color: var(--nc-navy-bright);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .tl-item:hover .tl-circle { background: var(--nc-navy-dim); border-color: var(--nc-navy-bright); }
+    .tl-time {
+      font-family: 'Share Tech Mono', monospace; font-size: 9px;
+      letter-spacing: 0.1em; color: var(--nc-gray); text-align: center; white-space: nowrap;
+    }
+
+    /* 타임라인 카드 */
+    .tl-card {
+      flex: 1; padding: 24px 28px; margin-bottom: 16px;
+      background: var(--nc-dark); border: 1px solid var(--nc-border);
+      position: relative; overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .tl-card:hover { border-color: rgba(34,85,164,0.4); transform: translateX(4px); }
+    .tl-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--nc-navy), transparent);
+    }
+    .tl-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+    .tl-card h3 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 19px; color: var(--nc-white); letter-spacing: 0.04em; }
+    .tl-status-badge {
+      display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+      padding: 4px 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 0.15em;
+      text-transform: uppercase; border: 1px solid;
+    }
+    .badge-auto   { color: #6B9FFF; border-color: rgba(107,159,255,0.3); background: rgba(107,159,255,0.08); }
+    .badge-manual { color: var(--col-medium); border-color: rgba(255,204,0,0.3); background: rgba(255,204,0,0.06); }
+    .badge-system { color: var(--col-ok); border-color: rgba(0,204,100,0.3); background: rgba(0,204,100,0.06); }
+
+    .tl-card p { font-size: 13px; color: var(--nc-gray); line-height: 1.85; }
+    .tl-card p strong { color: var(--nc-light); font-weight: 500; }
+
+    /* 절차 세부 항목 */
+    .tl-detail-list { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .tl-detail-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 10px 14px; background: rgba(26,58,107,0.06);
+      border: 1px solid rgba(22,32,64,0.8); font-size: 13px; color: var(--nc-gray); line-height: 1.6;
+    }
+    .tl-detail-item .di { flex-shrink: 0; color: var(--nc-navy-bright); font-size: 13px; margin-top: 1px; }
+
+    /* 분기 안내 (유효/무효) */
+    .verdict-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .verdict-card { padding: 14px 16px; border: 1px solid; }
+    .verdict-valid   { background: rgba(0,204,100,0.05); border-color: rgba(0,204,100,0.2); }
+    .verdict-invalid { background: rgba(255,96,96,0.04); border-color: rgba(255,96,96,0.15); }
+    .verdict-card h5 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+    .verdict-valid   h5 { color: var(--col-ok); }
+    .verdict-invalid h5 { color: #FF6060; }
+    .verdict-card p { font-size: 12px; color: var(--nc-gray); line-height: 1.65; }
+
+    /* 지급 방법 카드 */
+    .payment-method-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 14px; }
+    .payment-method-card {
+      padding: 16px 18px; background: rgba(26,58,107,0.08); border: 1px solid var(--nc-border);
+      display: flex; flex-direction: column; gap: 6px; transition: border-color 0.2s;
+    }
+    .payment-method-card:hover { border-color: rgba(34,85,164,0.4); }
+    .pm-icon { font-size: 22px; }
+    .pm-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 15px; color: var(--nc-white); }
+    .pm-desc { font-size: 12px; color: var(--nc-gray); line-height: 1.6; }
+
+    /* 세금 안내 박스 */
+    .tax-box {
+      margin-top: 14px; padding: 16px 20px;
+      background: rgba(255,204,0,0.04); border: 1px solid rgba(255,204,0,0.18);
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .tax-box .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .tax-box p { font-size: 13px; color: var(--nc-gray); line-height: 1.75; }
+    .tax-box p strong { color: #FFCC00; font-weight: 500; }
+
+    /* 완료 카드 */
+    .tl-complete-card {
+      flex: 1; padding: 24px 28px; margin-bottom: 16px;
+      background: rgba(0,204,100,0.04); border: 1px solid rgba(0,204,100,0.2);
+      display: flex; align-items: center; gap: 20px;
+      transition: border-color 0.25s;
+    }
+    .tl-complete-card:hover { border-color: rgba(0,204,100,0.4); }
+    .complete-icon { font-size: 36px; flex-shrink: 0; }
+    .tl-complete-card h3 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; color: var(--col-ok); margin-bottom: 6px; }
+    .tl-complete-card p { font-size: 13px; color: var(--nc-gray); line-height: 1.75; }
+    .tl-complete-card p strong { color: var(--nc-light); font-weight: 500; }
+
+    /* ============================
+       자주 묻는 Q&A (보상 관련)
+       ============================ */
+    .qa-section { border-top: 1px solid var(--nc-border); }
+    .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    .qa-card {
+      padding: 24px; background: var(--nc-surface); border: 1px solid var(--nc-border);
+      position: relative; overflow: hidden; transition: border-color 0.25s, transform 0.25s;
+    }
+    .qa-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--nc-navy), transparent); }
+    .qa-card:hover { border-color: rgba(34,85,164,0.4); transform: translateY(-4px); }
+    .qa-q { display: flex; gap: 10px; margin-bottom: 12px; }
+    .qa-q-mark { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 20px; color: var(--nc-navy-bright); flex-shrink: 0; line-height: 1.2; }
+    .qa-q-text { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; color: var(--nc-white); letter-spacing: 0.03em; line-height: 1.35; }
+    .qa-a { font-size: 13px; color: var(--nc-gray); line-height: 1.8; padding-left: 28px; }
+    .qa-a strong { color: var(--nc-light); font-weight: 500; }
+
+    /* ============================
+       버튼
+       ============================ */
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 13px 28px; background: var(--nc-navy); color: var(--nc-white); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; clip-path: polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); transition: all 0.25s; border: none; cursor: pointer; }
+    .btn-primary:hover { background: var(--nc-navy-bright); transform: translateY(-2px); box-shadow: 0 8px 32px var(--nc-navy-glow); }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 10px; padding: 13px 28px; border: 1px solid var(--nc-border); color: var(--nc-light); font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 14px; letter-spacing: 0.1em; clip-path: polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); transition: all 0.25s; background: transparent; cursor: pointer; }
+    .btn-secondary:hover { border-color: var(--nc-navy); color: var(--nc-navy-bright); transform: translateY(-2px); }
+    .btn-arrow { transition: transform 0.2s; }
+    .btn-primary:hover .btn-arrow, .btn-secondary:hover .btn-arrow { transform: translateX(4px); }
+
+    /* ============================
+       CTA 배너
+       ============================ */
+    .cta-banner { border-top: 1px solid var(--nc-border); position: relative; overflow: hidden; }
+    .cta-banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(26,58,107,0.12) 0%, transparent 60%); }
+    .cta-inner { max-width: 1280px; margin: 0 auto; padding: 72px 40px; display: flex; align-items: center; justify-content: space-between; gap: 40px; position: relative; z-index: 1; }
+    .cta-text h2 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(24px, 3.5vw, 38px); color: var(--nc-white); line-height: 1.15; margin-bottom: 10px; }
+    .cta-text p { font-size: 14px; color: var(--nc-gray); line-height: 1.75; }
+    .cta-actions { display: flex; gap: 14px; flex-shrink: 0; }
+
+    /* ============================
+       FOOTER
+       ============================ */
+    footer { background: var(--nc-surface); border-top: 1px solid var(--nc-border); }
+    .footer-inner { max-width: 1280px; margin: 0 auto; padding: 56px 40px 28px; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
+    .footer-brand p { font-size: 13px; line-height: 1.85; color: var(--nc-gray); margin-top: 16px; max-width: 300px; }
+    .footer-col h4 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; color: var(--nc-white); text-transform: uppercase; margin-bottom: 18px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a { font-size: 13px; color: var(--nc-gray); transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--nc-navy-bright); }
+    .footer-bottom { border-top: 1px solid var(--nc-border); padding-top: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .footer-bottom p { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--nc-gray); letter-spacing: 0.08em; }
+    .footer-bottom p span { color: var(--nc-navy-bright); }
+
+    .scroll-top { position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px; background: var(--nc-navy); color: #fff; display: flex; align-items: center; justify-content: center; clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); cursor: pointer; z-index: 999; border: none; font-size: 18px; opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(16px); }
+    .scroll-top.visible { opacity: 1; transform: translateY(0); }
+    .scroll-top:hover { background: var(--nc-navy-bright); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ============================
+       반응형
+       ============================ */
+    @media (max-width: 1024px) {
+      .grade-card { grid-template-columns: 1fr; }
+      .grade-left { border-right: none; border-bottom: 1px solid var(--nc-border); }
+      .grade-mid { border-right: none; border-bottom: 1px solid var(--nc-border); }
+      .payment-method-grid { grid-template-columns: 1fr 1fr; }
+      .qa-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-inner { padding: 0 20px; }
+      nav { display: none; }
+      .hamburger { display: flex; }
+      .page-hero { padding: 120px 20px 60px; }
+      .section-inner { padding: 60px 20px; }
+      .verdict-grid { grid-template-columns: 1fr; }
+      .payment-method-grid { grid-template-columns: 1fr; }
+      .timeline::before { left: 19px; }
+      .tl-node { width: 40px; }
+      .tl-circle { width: 32px; height: 32px; font-size: 11px; }
+      .cta-inner { flex-direction: column; text-align: center; }
+      .cta-actions { flex-direction: column; width: 100%; }
+      .footer-top { grid-template-columns: 1fr; gap: 28px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">
+        <div class="logo-emblem"><span>NC</span></div>
+        <div class="logo-text">
+          <span class="brand">NCSOFT</span>
+          <span class="sub">Bug Bounty Program</span>
+        </div>
+      </a>
+      <nav>
+        <a href="index.html">프로그램 소개</a>
+        <a href="hall-of-fame.html">명예의 전당</a>
+        <a href="policy.html">취약점 대상/정책</a>
+        <a href="vulnerability_report.html" class="nav-cta">취약점 제보</a>
+        <a href="reward.html" class="active">보상금 지급</a>
+      </nav>
+      <div class="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="page-hero-bg">
+      <img src="images/doguri1.jpg" alt="Reward Background" />
+    </div>
+    <div class="page-hero-ring"></div>
+    <div class="page-hero-inner">
+      <div class="page-label reveal">
+        <div class="line"></div>
+        <span>Reward Policy</span>
+      </div>
+      <h1 class="reveal reveal-delay-1">보상금 <span class="accent">지급</span></h1>
+      <p class="reveal reveal-delay-2">
+        유효한 취약점으로 평가된 모든 제보에 대해 심각도에 따른 보상금을 지급합니다.<br />
+        등급별 보상 구간과 지급 절차를 확인해 주세요.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================
+       PART 1 — 등급별 보상 구간
+       ============================ -->
+  <section class="reward-section">
+    <div class="section-inner">
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>Reward Table</span>
+      </div>
+      <h2 class="section-title reveal reveal-delay-1">취약점 등급별 보상 구간</h2>
+      <p class="section-desc reveal reveal-delay-2">
+        취약점 심각도는 CVSS v3.1 점수와 실제 서비스 영향도를 종합하여 NCSOFT 보안팀이 최종 결정합니다.
+        동일한 취약점 유형이라도 영향 범위에 따라 등급이 달라질 수 있습니다.
+      </p>
+
+      <div class="grade-list">
+
+        <!-- Critical -->
+        <div class="grade-card critical reveal">
+          <div class="grade-left">
+            <div class="grade-dot-wrap">
+              <div class="grade-dot"></div>
+              <span class="grade-name">Critical</span>
+            </div>
+            <div class="grade-cvss">CVSS 9.0 ~ 10.0</div>
+            <div class="grade-bar-wrap">
+              <div class="grade-bar-track"><div class="grade-bar-fill"></div></div>
+            </div>
+          </div>
+          <div class="grade-mid">
+            <h4>치명적 취약점 — 즉각적이고 광범위한 피해 발생 가능</h4>
+            <p>인증 없이 서버를 완전히 장악하거나, 전체 사용자 데이터를 유출시키거나, 결제 시스템을 직접 침해할 수 있는 수준의 취약점입니다. 발견 즉시 최우선으로 처리됩니다.</p>
+            <div class="grade-examples">
+              <span class="grade-ex-tag">원격 코드 실행(RCE)</span>
+              <span class="grade-ex-tag">인증 없는 관리자 권한 탈취</span>
+              <span class="grade-ex-tag">대규모 개인정보 유출</span>
+              <span class="grade-ex-tag">결제 시스템 직접 침해</span>
+              <span class="grade-ex-tag">전체 DB 접근</span>
+            </div>
+          </div>
+          <div class="grade-right">
+            <div class="grade-reward-label">보상 구간</div>
+            <div class="grade-reward-range">₩5,000,000<br/>~ ₩20,000,000<span style="font-size:14px;font-weight:400;">+</span></div>
+            <div class="grade-reward-note">영향 범위 및 재현 가능성에 따라<br/>보상액이 상향 조정될 수 있습니다.</div>
+          </div>
+        </div>
+
+        <!-- High -->
+        <div class="grade-card high reveal reveal-delay-1">
+          <div class="grade-left">
+            <div class="grade-dot-wrap">
+              <div class="grade-dot"></div>
+              <span class="grade-name">High</span>
+            </div>
+            <div class="grade-cvss">CVSS 7.0 ~ 8.9</div>
+            <div class="grade-bar-wrap">
+              <div class="grade-bar-track"><div class="grade-bar-fill"></div></div>
+            </div>
+          </div>
+          <div class="grade-mid">
+            <h4>높은 수준의 취약점 — 서비스 운영에 심각한 영향</h4>
+            <p>권한 상승, 인증 우회, 민감 데이터 직접 노출 등 서비스의 기밀성·무결성·가용성을 크게 저해하는 취약점입니다.</p>
+            <div class="grade-examples">
+              <span class="grade-ex-tag">권한 상승</span>
+              <span class="grade-ex-tag">인증 우회</span>
+              <span class="grade-ex-tag">SQL Injection</span>
+              <span class="grade-ex-tag">계정 탈취</span>
+              <span class="grade-ex-tag">민감 데이터 직접 노출</span>
+            </div>
+          </div>
+          <div class="grade-right">
+            <div class="grade-reward-label">보상 구간</div>
+            <div class="grade-reward-range">₩1,000,000<br/>~ ₩5,000,000</div>
+            <div class="grade-reward-note">영향을 받는 서비스 규모에 따라<br/>구간 내에서 조정됩니다.</div>
+          </div>
+        </div>
+
+        <!-- Medium -->
+        <div class="grade-card medium reveal reveal-delay-2">
+          <div class="grade-left">
+            <div class="grade-dot-wrap">
+              <div class="grade-dot"></div>
+              <span class="grade-name">Medium</span>
+            </div>
+            <div class="grade-cvss">CVSS 4.0 ~ 6.9</div>
+            <div class="grade-bar-wrap">
+              <div class="grade-bar-track"><div class="grade-bar-fill"></div></div>
+            </div>
+          </div>
+          <div class="grade-mid">
+            <h4>보통 수준의 취약점 — 특정 조건에서 보안 영향</h4>
+            <p>특정 조건이나 사용자 인터랙션이 필요하지만, 성공 시 일부 데이터 노출이나 기능 침해가 가능한 취약점입니다.</p>
+            <div class="grade-examples">
+              <span class="grade-ex-tag">Stored XSS</span>
+              <span class="grade-ex-tag">CSRF (민감 기능)</span>
+              <span class="grade-ex-tag">제한적 정보 노출</span>
+              <span class="grade-ex-tag">비즈니스 로직 우회</span>
+            </div>
+          </div>
+          <div class="grade-right">
+            <div class="grade-reward-label">보상 구간</div>
+            <div class="grade-reward-range">₩200,000<br/>~ ₩1,000,000</div>
+            <div class="grade-reward-note">복잡한 재현 조건이 있을 경우<br/>구간 하단 적용 가능.</div>
+          </div>
+        </div>
+
+        <!-- Low -->
+        <div class="grade-card low reveal reveal-delay-3">
+          <div class="grade-left">
+            <div class="grade-dot-wrap">
+              <div class="grade-dot"></div>
+              <span class="grade-name">Low</span>
+            </div>
+            <div class="grade-cvss">CVSS 0.1 ~ 3.9</div>
+            <div class="grade-bar-wrap">
+              <div class="grade-bar-track"><div class="grade-bar-fill"></div></div>
+            </div>
+          </div>
+          <div class="grade-mid">
+            <h4>낮은 수준의 취약점 — 제한적 보안 영향</h4>
+            <p>보안에 미치는 영향이 낮거나 악용을 위해 여러 추가 조건이 필요한 취약점입니다. 개선 권고 형태로 처리될 수 있습니다.</p>
+            <div class="grade-examples">
+              <span class="grade-ex-tag">Reflected XSS (제한 조건)</span>
+              <span class="grade-ex-tag">낮은 영향도 정보 노출</span>
+              <span class="grade-ex-tag">보안 헤더 누락</span>
+            </div>
+          </div>
+          <div class="grade-right">
+            <div class="grade-reward-label">보상 구간</div>
+            <div class="grade-reward-range">₩50,000<br/>~ ₩200,000</div>
+            <div class="grade-reward-note">일부 Low 등급 취약점은<br/>감사장으로 대체될 수 있습니다.</div>
+          </div>
+        </div>
+
+        <!-- Informational -->
+        <div class="grade-card info reveal reveal-delay-4">
+          <div class="grade-left">
+            <div class="grade-dot-wrap">
+              <div class="grade-dot"></div>
+              <span class="grade-name">Informational</span>
+            </div>
+            <div class="grade-cvss">CVSS 0.0 ~ 3.9</div>
+            <div class="grade-bar-wrap">
+              <div class="grade-bar-track"><div class="grade-bar-fill"></div></div>
+            </div>
+          </div>
+          <div class="grade-mid">
+            <h4>정보성 발견 — 실질적 보안 영향 없음</h4>
+            <p>실질적인 보안 위협이 없거나, 이미 공개된 정보에 해당하는 발견 사항입니다. 보상금은 지급되지 않으나 기록은 남깁니다.</p>
+            <div class="grade-examples">
+              <span class="grade-ex-tag">버전 정보 노출</span>
+              <span class="grade-ex-tag">디렉토리 리스팅</span>
+              <span class="grade-ex-tag">자동 스캔 결과</span>
+            </div>
+          </div>
+          <div class="grade-right">
+            <div class="grade-reward-label">보상</div>
+            <div class="no-reward-badge">─ 보상 없음</div>
+            <div class="grade-reward-note" style="margin-top:10px;">감사 기록에는 남으며,<br/>명예의 전당 등록은 제외됩니다.</div>
+          </div>
+        </div>
+
+      </div><!-- /.grade-list -->
+
+      <div class="reward-notice-bar reveal">
+        <span class="icon">ℹ️</span>
+        <p>
+          <strong>최종 등급 및 보상액은 NCSOFT 보안팀이 결정합니다.</strong>
+          연구자가 제안한 등급은 참고 자료로 활용되며, 내부 영향도 평가·재현 가능성·공격 복잡도를 종합한 결과가 최종 적용됩니다.
+          동일한 취약점을 여러 연구자가 중복 제보한 경우 <strong>가장 먼저 접수된 제보에만 보상</strong>이 지급됩니다.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================
+       PART 2 — 지급 절차
+       ============================ -->
+  <section class="process-section">
+    <div class="section-inner">
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>Payout Process</span>
+      </div>
+      <h2 class="section-title reveal reveal-delay-1">보상금 지급 절차</h2>
+      <p class="section-desc reveal reveal-delay-2">
+        제보 접수 후 아래 절차에 따라 검토·결정·지급이 진행됩니다.
+        각 단계별 소요 기간은 취약점의 복잡도에 따라 달라질 수 있습니다.
+      </p>
+
+      <div class="timeline">
+
+        <!-- STEP 1 -->
+        <div class="tl-item reveal">
+          <div class="tl-node">
+            <div class="tl-circle">01</div>
+            <div class="tl-time">D+0</div>
+          </div>
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <h3>제보 접수 확인</h3>
+              <span class="tl-status-badge badge-auto">⚡ 자동</span>
+            </div>
+            <p>취약점 제보 메일이 수신되면 <strong>자동으로 접수 확인 메일</strong>이 발송됩니다. 접수 번호(티켓 ID)가 포함되어 있으니 보관해 주세요.</p>
+            <div class="tl-detail-list">
+              <div class="tl-detail-item"><span class="di">›</span><span>접수 확인 메일 내 티켓 ID로 이후 문의 시 빠른 조회가 가능합니다.</span></div>
+              <div class="tl-detail-item"><span class="di">›</span><span>보안서약서가 미제출된 경우 이 단계에서 안내 메일이 별도 발송됩니다.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="tl-item reveal reveal-delay-1">
+          <div class="tl-node">
+            <div class="tl-circle">02</div>
+            <div class="tl-time">D+3 이내</div>
+          </div>
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <h3>초기 검토 및 응답</h3>
+              <span class="tl-status-badge badge-manual">👤 담당자 검토</span>
+            </div>
+            <p>보안팀 담당자가 제보 내용을 확인하고 <strong>3영업일 이내</strong>에 초기 응답을 드립니다.</p>
+            <div class="tl-detail-list">
+              <div class="tl-detail-item"><span class="di">›</span><span>제보 내용이 불충분할 경우 추가 정보(PoC, 환경 정보 등)를 요청할 수 있습니다.</span></div>
+              <div class="tl-detail-item"><span class="di">›</span><span>제보 범위 외 취약점은 이 단계에서 반려 처리되며 사유가 안내됩니다.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="tl-item reveal reveal-delay-2">
+          <div class="tl-node">
+            <div class="tl-circle">03</div>
+            <div class="tl-time">D+30 이내</div>
+          </div>
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <h3>취약점 검증 및 등급 결정</h3>
+              <span class="tl-status-badge badge-manual">👤 내부 평가</span>
+            </div>
+            <p>보안팀이 취약점을 직접 재현하고, CVSS 점수와 실제 서비스 영향도를 종합하여 <strong>최종 심각도 등급을 확정</strong>합니다.</p>
+            <div class="verdict-grid">
+              <div class="verdict-card verdict-valid">
+                <h5>✅ 유효 판정 시</h5>
+                <p>등급 확정 후 연구자에게 결과를 안내하고 다음 단계(보상금 확정)로 진행합니다.</p>
+              </div>
+              <div class="verdict-card verdict-invalid">
+                <h5>✗ 무효 판정 시</h5>
+                <p>재현 불가, 범위 외, 중복 제보 등 해당 사유와 함께 반려 통보를 드립니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="tl-item reveal reveal-delay-3">
+          <div class="tl-node">
+            <div class="tl-circle">04</div>
+            <div class="tl-time">D+35 이내</div>
+          </div>
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <h3>보상금 확정 및 안내</h3>
+              <span class="tl-status-badge badge-manual">👤 결정</span>
+            </div>
+            <p>확정된 등급에 따른 <strong>보상금 금액이 연구자에게 통보</strong>됩니다. 이의가 있는 경우 통보일로부터 7일 이내에 재검토를 요청할 수 있습니다.</p>
+            <div class="tl-detail-list">
+              <div class="tl-detail-item"><span class="di">›</span><span>재검토 요청 시 추가 근거 자료(영향 범위 확장 증명 등)를 함께 제출해 주세요.</span></div>
+              <div class="tl-detail-item"><span class="di">›</span><span>재검토 결과는 최초 통보 후 7영업일 이내에 안내드립니다.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="tl-item reveal reveal-delay-4">
+          <div class="tl-node">
+            <div class="tl-circle">05</div>
+            <div class="tl-time">D+45 이내</div>
+          </div>
+          <div class="tl-card">
+            <div class="tl-card-header">
+              <h3>지급 정보 수집</h3>
+              <span class="tl-status-badge badge-manual">👤 서류 제출</span>
+            </div>
+            <p>보상금 지급을 위해 아래 정보를 메일로 제출해 주세요. <strong>개인정보는 보상금 지급 목적으로만 사용</strong>되며 처리 후 안전하게 파기됩니다.</p>
+            <div class="tl-detail-list">
+              <div class="tl-detail-item"><span class="di">›</span><span><strong>개인 연구자:</strong> 성명, 생년월일, 주민등록번호 앞 7자리, 계좌번호 (은행명·예금주 포함)</span></div>
+              <div class="tl-detail-item"><span class="di">›</span><span><strong>법인·팀 제보:</strong> 사업자등록번호, 법인명, 계좌번호, 세금계산서 발행 정보</span></div>
+              <div class="tl-detail-item"><span class="di">›</span><span>외국인 연구자의 경우 여권 사본 및 외화 송금 계좌 정보가 필요합니다.</span></div>
+            </div>
+            <div class="payment-method-grid">
+              <div class="payment-method-card">
+                <div class="pm-icon">🏦</div>
+                <div class="pm-name">국내 계좌이체</div>
+                <div class="pm-desc">원화 계좌로 직접 입금 (가장 빠름)</div>
+              </div>
+              <div class="payment-method-card">
+                <div class="pm-icon">🌍</div>
+                <div class="pm-name">해외 송금</div>
+                <div class="pm-desc">SWIFT 코드 필요, 별도 수수료 발생 가능</div>
+              </div>
+              <div class="payment-method-card">
+                <div class="pm-icon">🧾</div>
+                <div class="pm-name">세금계산서</div>
+                <div class="pm-desc">사업자 등록 법인은 세금계산서 발행 필수</div>
+              </div>
+            </div>
+            <div class="tax-box">
+              <span class="icon">⚠️</span>
+              <p><strong>세금 안내:</strong> 보상금은 기타소득 또는 사업소득으로 분류될 수 있으며, 관련 세금(소득세·지방소득세 등)은 연구자 본인이 신고·납부할 의무가 있습니다. NCSOFT는 지급 시 법령에 따른 원천징수를 적용할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6 (완료) -->
+        <div class="tl-item reveal">
+          <div class="tl-node">
+            <div class="tl-circle" style="background:rgba(0,204,100,0.1);border-color:rgba(0,204,100,0.5);color:var(--col-ok);">✓</div>
+            <div class="tl-time">D+60 이내</div>
+          </div>
+          <div class="tl-complete-card">
+            <span class="complete-icon">🏆</span>
+            <div>
+              <h3>보상금 지급 완료</h3>
+              <p>지급 정보 확인 완료 후 <strong>영업일 기준 10일 이내</strong>에 보상금이 지급됩니다. 지급 완료 시 확인 메일이 발송되며, 연구자의 핸들명이 <strong>명예의 전당</strong>에 등록됩니다 (비공개 요청 시 제외).</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.timeline -->
+    </div>
+  </section>
+
+  <!-- ============================
+       보상 관련 Q&A
+       ============================ -->
+  <section class="qa-section">
+    <div class="section-inner">
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>Reward FAQ</span>
+      </div>
+      <h2 class="section-title reveal reveal-delay-1">보상금 관련 Q&A</h2>
+
+      <div class="qa-grid">
+        <div class="qa-card reveal">
+          <div class="qa-q">
+            <span class="qa-q-mark">Q.</span>
+            <span class="qa-q-text">보상금 지급 기간이 얼마나 걸리나요?</span>
+          </div>
+          <div class="qa-a">제보 접수부터 보상금 지급까지 최대 <strong>60일</strong>이 소요될 수 있습니다. 취약점 복잡도나 추가 검증이 필요한 경우 더 걸릴 수 있으며, 이 경우 별도로 안내드립니다. 진행 상황은 언제든지 티켓 ID로 문의 가능합니다.</div>
+        </div>
+        <div class="qa-card reveal reveal-delay-1">
+          <div class="qa-q">
+            <span class="qa-q-mark">Q.</span>
+            <span class="qa-q-text">보상금 등급에 이의를 제기할 수 있나요?</span>
+          </div>
+          <div class="qa-a">등급 통보 후 <strong>7일 이내</strong>에 추가 근거 자료와 함께 재검토를 요청할 수 있습니다. 단순 불만이 아닌 영향 범위 확장을 증명하는 구체적 자료가 있어야 재검토가 진행됩니다. 재검토 결과가 최종입니다.</div>
+        </div>
+        <div class="qa-card reveal reveal-delay-2">
+          <div class="qa-q">
+            <span class="qa-q-mark">Q.</span>
+            <span class="qa-q-text">같은 취약점을 여러 명이 제보하면 어떻게 되나요?</span>
+          </div>
+          <div class="qa-a"><strong>가장 먼저 접수된 제보</strong>에만 보상금이 지급됩니다. 이후 중복 제보는 "중복"으로 처리되어 보상 대상에서 제외됩니다. 다만, 늦게 접수된 제보가 훨씬 높은 영향도를 입증한 경우 추가 보상을 검토할 수 있습니다.</div>
+        </div>
+        <div class="qa-card reveal reveal-delay-3">
+          <div class="qa-q">
+            <span class="qa-q-mark">Q.</span>
+            <span class="qa-q-text">해외 거주자도 보상금을 받을 수 있나요?</span>
+          </div>
+          <div class="qa-a">네, <strong>국적·거주지 무관하게</strong> 유효한 취약점 제보에 보상합니다. 해외 거주자의 경우 SWIFT 국제 송금으로 지급되며, 이 과정에서 발생하는 환율 차이 및 송금 수수료는 수취인 부담이 될 수 있습니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA 배너 -->
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <div class="cta-text reveal">
+        <h2>취약점을 발견하셨나요?<br/>지금 바로 제보하고 보상받으세요.</h2>
+        <p>제보 전 정책과 대상 범위를 먼저 확인하시면 더욱 원활한 처리가 가능합니다.</p>
+      </div>
+      <div class="cta-actions reveal reveal-delay-1">
+        <a href="vulnerability_report.html" class="btn-primary">취약점 제보하기 <span class="btn-arrow">→</span></a>
+        <a href="policy.html" class="btn-secondary">정책 확인하기 <span class="btn-arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <div class="logo-emblem"><span>NC</span></div>
+            <div class="logo-text">
+              <span class="brand">NCSOFT</span>
+              <span class="sub">Bug Bounty Program</span>
+            </div>
+          </a>
+          <p>NCSOFT 버그바운티 프로그램은 보안 연구자들과의 협력을 통해 더 안전한 디지털 환경을 만들어 나갑니다.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Program</h4>
+          <ul>
+            <li><a href="index.html">프로그램 소개</a></li>
+            <li><a href="policy.html">취약점 대상/정책</a></li>
+            <li><a href="reward.html">보상금 지급</a></li>
+            <li><a href="hall-of-fame.html">명예의 전당</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="vulnerability_report.html">취약점 제보</a></li>
+            <li><a href="policy.html#faq">FAQ</a></li>
+            <li><a href="policy.html#rules">제보 가이드라인</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>NCSOFT</h4>
+          <ul>
+            <li><a href="https://www.ncsoft.com" target="_blank">공식 홈페이지</a></li>
+            <li><a href="#">개인정보 처리방침</a></li>
+            <li><a href="#">이용약관</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 <span>NCSOFT Corporation</span>. All rights reserved.</p>
+        <p>Bug Bounty Program v1.0 — <span>Security Team</span></p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="맨 위로">↑</button>
+
+  <script>
+    function toggleMenu() {
+      const nav = document.querySelector('nav');
+      const isOpen = nav.style.display === 'flex';
+      nav.style.display = isOpen ? 'none' : 'flex';
+      nav.style.flexDirection = 'column';
+      nav.style.position = 'absolute';
+      nav.style.top = '68px';
+      nav.style.left = '0'; nav.style.right = '0';
+      nav.style.background = 'rgba(6,8,15,0.98)';
+      nav.style.padding = '20px';
+      nav.style.borderBottom = '1px solid #162040';
+    }
+
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 300);
+    });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    revealEls.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
