@@ -13,11 +13,11 @@
        ============================ */
     :root {
       --nc-navy:        #1A3A6B;
-      --nc-navy-bright: #2255A4;
+      --nc-navy-bright: #4A80D4;
       --nc-dark:        #06080F;
       --nc-surface:     #0C1120;
       --nc-border:      #162040;
-      --nc-gray:        #7A8AAE;
+      --nc-gray:        #AAB8D4;
       --nc-light:       #D8E2F4;
       --nc-white:       #FFFFFF;
       --nc-navy-dim:    rgba(26,58,107,0.18);
@@ -75,7 +75,7 @@
     .logo { display: flex; align-items: center; gap: 14px; }
     .logo-emblem {
       width: 36px; height: 36px;
-      background: linear-gradient(135deg, #1A3A6B, #2255A4);
+      background: linear-gradient(135deg, #1A3A6B, #4A80D4);
       clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
@@ -89,7 +89,7 @@
       font-size: 18px; letter-spacing: 0.12em; color: var(--nc-white);
     }
     .logo-text .sub {
-      font-size: 9px; letter-spacing: 0.25em;
+      font-size: 11px; letter-spacing: 0.25em;
       color: var(--nc-navy-bright); text-transform: uppercase; margin-top: 2px;
     }
     nav { display: flex; align-items: center; gap: 4px; }
@@ -108,7 +108,7 @@
     nav a.active { color: var(--nc-white); }
     nav a.active::after { transform: scaleX(1); }
     .nav-cta {
-      margin-left: 20px; padding: 9px 22px !important;
+      margin-left: 20px; padding: 11px 22px !important;
       background: var(--nc-navy); color: var(--nc-white) !important;
       font-family: 'Rajdhani', sans-serif; font-weight: 700;
       font-size: 13px !important; letter-spacing: 0.1em;
@@ -156,7 +156,7 @@
       max-width: 1280px; margin: 0 auto; position: relative; z-index: 2;
     }
     .page-label {
-      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px;
+      display: inline-flex; align-items: center; gap: 11px; margin-bottom: 16px;
     }
     .page-label .line { width: 32px; height: 1px; background: var(--nc-navy-bright); }
     .page-label span {
@@ -178,10 +178,10 @@
        ============================ */
     section { position: relative; z-index: 1; }
     .section-inner { max-width: 1280px; margin: 0 auto; padding: 80px 40px; }
-    .section-label { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .section-label { display: inline-flex; align-items: center; gap: 11px; margin-bottom: 14px; }
     .section-label .line { width: 24px; height: 1px; background: var(--nc-navy-bright); }
     .section-label span {
-      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
       letter-spacing: 0.3em; color: var(--nc-navy-bright); text-transform: uppercase;
     }
     .section-title {
@@ -285,7 +285,7 @@
     .rank-2 .p-stat-num { color: var(--silver); }
     .rank-3 .p-stat-num { color: var(--bronze); }
     .p-stat-label {
-      font-size: 10px; letter-spacing: 0.15em; color: var(--nc-gray);
+      font-size: 11px; letter-spacing: 0.15em; color: var(--nc-gray);
       text-transform: uppercase; margin-top: 3px;
     }
     /* 크라운 아이콘 (1위 전용) */
@@ -333,7 +333,7 @@
     }
     .ranking-table th {
       padding: 14px 20px; text-align: left;
-      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
       letter-spacing: 0.2em; color: var(--nc-gray); text-transform: uppercase;
       font-weight: 400; white-space: nowrap;
     }
@@ -378,7 +378,7 @@
     .severity-badges { display: flex; gap: 6px; flex-wrap: wrap; }
     .sev-badge {
       padding: 2px 8px;
-      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
       letter-spacing: 0.1em; border: 1px solid;
     }
     .sev-c { background: rgba(26,58,107,0.2);  color: #6B9FFF; border-color: rgba(107,159,255,0.3); }
@@ -433,7 +433,7 @@
     }
     .stat-card-num span { color: var(--nc-navy-bright); }
     .stat-card-label {
-      font-family: 'Share Tech Mono', monospace; font-size: 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px;
       letter-spacing: 0.2em; color: var(--nc-gray); text-transform: uppercase;
     }
     .stat-card-icon {
@@ -458,14 +458,14 @@
     }
     .cta-text h2 {
       font-family: 'Rajdhani', sans-serif; font-weight: 700;
-      font-size: clamp(24px, 3.5vw, 38px); color: var(--nc-white); line-height: 1.15; margin-bottom: 10px;
+      font-size: clamp(24px, 3.5vw, 38px); color: var(--nc-white); line-height: 1.15; margin-bottom: 11px;
     }
     .cta-text p { font-size: 14px; color: var(--nc-gray); line-height: 1.75; }
     .cta-actions { display: flex; gap: 14px; flex-shrink: 0; }
 
     /* 버튼 공통 */
     .btn-primary {
-      display: inline-flex; align-items: center; gap: 10px;
+      display: inline-flex; align-items: center; gap: 11px;
       padding: 13px 28px; background: var(--nc-navy); color: var(--nc-white);
       font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px;
       letter-spacing: 0.1em;
@@ -477,7 +477,7 @@
       box-shadow: 0 8px 32px var(--nc-navy-glow);
     }
     .btn-secondary {
-      display: inline-flex; align-items: center; gap: 10px;
+      display: inline-flex; align-items: center; gap: 11px;
       padding: 13px 28px; border: 1px solid var(--nc-border); color: var(--nc-light);
       font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 14px;
       letter-spacing: 0.1em;
@@ -506,12 +506,12 @@
       font-size: 13px; letter-spacing: 0.12em; color: var(--nc-white);
       text-transform: uppercase; margin-bottom: 18px;
     }
-    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
     .footer-col ul li a { font-size: 13px; color: var(--nc-gray); transition: color 0.2s; }
     .footer-col ul li a:hover { color: var(--nc-navy-bright); }
     .footer-bottom {
       border-top: 1px solid var(--nc-border); padding-top: 24px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 11px;
     }
     .footer-bottom p { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--nc-gray); letter-spacing: 0.08em; }
     .footer-bottom p span { color: var(--nc-navy-bright); }
