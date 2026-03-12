@@ -505,19 +505,17 @@
           </div>
           <div class="grade-mid">
             <h4>치명적 취약점 — 즉각적이고 광범위한 피해 발생 가능</h4>
-            <p>인증 없이 서버를 완전히 장악하거나, 전체 사용자 데이터를 유출시키거나, 결제 시스템을 직접 침해할 수 있는 수준의 취약점입니다. 발견 즉시 최우선으로 처리됩니다.</p>
+            <p>이 등급의 취약점은 광범위한 사용자 또는 서비스 자체에 즉각적인 위험을 초래합니다. 공격자가 시스템을 완전히 제어하거나 대규모 데이터를 유출할 수 있습니다.</p>
             <div class="grade-examples">
               <span class="grade-ex-tag">원격 코드 실행(RCE)</span>
-              <span class="grade-ex-tag">인증 없는 관리자 권한 탈취</span>
-              <span class="grade-ex-tag">대규모 개인정보 유출</span>
-              <span class="grade-ex-tag">결제 시스템 직접 침해</span>
-              <span class="grade-ex-tag">전체 DB 접근</span>
+              <span class="grade-ex-tag">내부 시스템 엑세스/컨트롤이 가능한 취약점</span>
+              <span class="grade-ex-tag">임의 코드/명령 실행</span>
+              <span class="grade-ex-tag">전제 조건없는 대량의 개인정보 유출</span>
             </div>
           </div>
           <div class="grade-right">
             <div class="grade-reward-label">보상 구간</div>
-            <div class="grade-reward-range">₩5,000,000<br/>~ ₩20,000,000<span style="font-size:14px;font-weight:400;">+</span></div>
-            <div class="grade-reward-note">영향 범위 및 재현 가능성에 따라<br/>보상액이 상향 조정될 수 있습니다.</div>
+            <div class="grade-reward-range">₩2,000,000<br/>~ ₩5,000,000<span style="font-size:14px;font-weight:400;">+</span></div>
           </div>
         </div>
 
@@ -535,19 +533,15 @@
           </div>
           <div class="grade-mid">
             <h4>높은 수준의 취약점 — 서비스 운영에 심각한 영향</h4>
-            <p>권한 상승, 인증 우회, 민감 데이터 직접 노출 등 서비스의 기밀성·무결성·가용성을 크게 저해하는 취약점입니다.</p>
+            <p>이 등급의 취약점은 광범위한 사용자 또는 서비스 자체에 즉각적인 위험을 초래합니다. 공격자가 시스템을 완전히 제어하거나 대규모 데이터를 유출할 수 있습니다.</p>
             <div class="grade-examples">
-              <span class="grade-ex-tag">권한 상승</span>
-              <span class="grade-ex-tag">인증 우회</span>
-              <span class="grade-ex-tag">SQL Injection</span>
-              <span class="grade-ex-tag">계정 탈취</span>
-              <span class="grade-ex-tag">민감 데이터 직접 노출</span>
+              <span class="grade-ex-tag">타 사용자 중요데이터 획득</span>
+              <span class="grade-ex-tag">재정적/데이터 손실에 명확한 잠재적 위험을 가진 취약점</span>
             </div>
           </div>
           <div class="grade-right">
             <div class="grade-reward-label">보상 구간</div>
-            <div class="grade-reward-range">₩1,000,000<br/>~ ₩5,000,000</div>
-            <div class="grade-reward-note">영향을 받는 서비스 규모에 따라<br/>구간 내에서 조정됩니다.</div>
+            <div class="grade-reward-range">₩1,000,000<br/>~ ₩2,000,000</div>
           </div>
         </div>
 
@@ -565,18 +559,16 @@
           </div>
           <div class="grade-mid">
             <h4>보통 수준의 취약점 — 특정 조건에서 보안 영향</h4>
-            <p>특정 조건이나 사용자 인터랙션이 필요하지만, 성공 시 일부 데이터 노출이나 기능 침해가 가능한 취약점입니다.</p>
+            <p>이 등급의 취약점은 액세스 권한이 없는 제한된 양의 데이터를 읽거나 수정할 수 있습니다. 일반적으로 High 등급의 취약점보다 덜 민감한 정보, 기능에 대한 액세스 권한을 획득하며 기밀성(C), 무결성(I), 가용성(A)에 다소 높은 영향을 미치는 취약점입니다.</p>
             <div class="grade-examples">
               <span class="grade-ex-tag">Stored XSS</span>
-              <span class="grade-ex-tag">CSRF (민감 기능)</span>
-              <span class="grade-ex-tag">제한적 정보 노출</span>
-              <span class="grade-ex-tag">비즈니스 로직 우회</span>
+              <span class="grade-ex-tag">액세스 권한이 없는 서비스의 민감한 정보를 획득</span>
+              <span class="grade-ex-tag">악용 소지가 명확한 취약점</span>
             </div>
           </div>
           <div class="grade-right">
             <div class="grade-reward-label">보상 구간</div>
             <div class="grade-reward-range">₩200,000<br/>~ ₩1,000,000</div>
-            <div class="grade-reward-note">복잡한 재현 조건이 있을 경우<br/>구간 하단 적용 가능.</div>
           </div>
         </div>
 
@@ -594,17 +586,15 @@
           </div>
           <div class="grade-mid">
             <h4>낮은 수준의 취약점 — 제한적 보안 영향</h4>
-            <p>보안에 미치는 영향이 낮거나 악용을 위해 여러 추가 조건이 필요한 취약점입니다. 개선 권고 형태로 처리될 수 있습니다.</p>
+            <p>이 등급의 취약점은 매우 제한된 양의 데이터에 액세스할 수 있습니다. 일반적으로 기밀성(C), 무결성(I), 가용성(A)에 복합적인 영향을 미치지 못하거나 공격 성공을 위한 전제 조건이 필요합니다.</p>
             <div class="grade-examples">
-              <span class="grade-ex-tag">Reflected XSS (제한 조건)</span>
-              <span class="grade-ex-tag">낮은 영향도 정보 노출</span>
-              <span class="grade-ex-tag">보안 헤더 누락</span>
+              <span class="grade-ex-tag">일부 정보 수정</span>
+              <span class="grade-ex-tag">악용 가능한 정보 획득</span>
             </div>
           </div>
           <div class="grade-right">
             <div class="grade-reward-label">보상 구간</div>
             <div class="grade-reward-range">₩50,000<br/>~ ₩200,000</div>
-            <div class="grade-reward-note">일부 Low 등급 취약점은<br/>감사장으로 대체될 수 있습니다.</div>
           </div>
         </div>
 
@@ -622,11 +612,9 @@
           </div>
           <div class="grade-mid">
             <h4>정보성 발견 — 실질적 보안 영향 없음</h4>
-            <p>실질적인 보안 위협이 없거나, 이미 공개된 정보에 해당하는 발견 사항입니다. 보상금은 지급되지 않으나 기록은 남깁니다.</p>
+            <p>이 등급의 취약점은 포상 범위를 벗어나지만 보안 담당자에게 도움이 되거나 영향도가 미미한 취약점입니다.</p>
             <div class="grade-examples">
-              <span class="grade-ex-tag">버전 정보 노출</span>
-              <span class="grade-ex-tag">디렉토리 리스팅</span>
-              <span class="grade-ex-tag">자동 스캔 결과</span>
+              <span class="grade-ex-tag">포상 범위를 벗어나는 영향도가 미미한 취약점</span>
             </div>
           </div>
           <div class="grade-right">
@@ -642,7 +630,7 @@
         <span class="icon">ℹ️</span>
         <p>
           <strong>최종 등급 및 보상액은 NCSOFT 보안팀이 결정합니다.</strong>
-          연구자가 제안한 등급은 참고 자료로 활용되며, 내부 영향도 평가·재현 가능성·공격 복잡도를 종합한 결과가 최종 적용됩니다.
+          윤리적 해커가 제안한 등급은 참고 자료로 활용되며, 내부 영향도 평가·재현 가능성·공격 복잡도를 종합한 결과가 최종 적용됩니다.
           동일한 취약점을 여러 연구자가 중복 제보한 경우 <strong>가장 먼저 접수된 제보에만 보상</strong>이 지급됩니다.
         </p>
       </div>
@@ -671,16 +659,13 @@
         <div class="tl-item reveal">
           <div class="tl-node">
             <div class="tl-circle">01</div>
-            <div class="tl-time">D+0</div>
           </div>
           <div class="tl-card">
             <div class="tl-card-header">
               <h3>제보 접수 확인</h3>
-              <span class="tl-status-badge badge-auto">⚡ 자동</span>
             </div>
-            <p>취약점 제보 메일이 수신되면 <strong>자동으로 접수 확인 메일</strong>이 발송됩니다. 접수 번호(티켓 ID)가 포함되어 있으니 보관해 주세요.</p>
+            <p>취약점 제보 메일이 수신되면 <strong>NCSOFT 보안팀이 메일을 확인</strong>strong>합니다.
             <div class="tl-detail-list">
-              <div class="tl-detail-item"><span class="di">›</span><span>접수 확인 메일 내 티켓 ID로 이후 문의 시 빠른 조회가 가능합니다.</span></div>
               <div class="tl-detail-item"><span class="di">›</span><span>보안서약서가 미제출된 경우 이 단계에서 안내 메일이 별도 발송됩니다.</span></div>
             </div>
           </div>
@@ -690,14 +675,12 @@
         <div class="tl-item reveal reveal-delay-1">
           <div class="tl-node">
             <div class="tl-circle">02</div>
-            <div class="tl-time">D+3 이내</div>
           </div>
           <div class="tl-card">
             <div class="tl-card-header">
               <h3>초기 검토 및 응답</h3>
-              <span class="tl-status-badge badge-manual">👤 담당자 검토</span>
             </div>
-            <p>보안팀 담당자가 제보 내용을 확인하고 <strong>3영업일 이내</strong>에 초기 응답을 드립니다.</p>
+            <p>NCSOFT 보안팀이 제보 내용을 확인하고 <strong>10영업일 이내</strong>에 초기 응답을 드립니다.</p>
             <div class="tl-detail-list">
               <div class="tl-detail-item"><span class="di">›</span><span>제보 내용이 불충분할 경우 추가 정보(PoC, 환경 정보 등)를 요청할 수 있습니다.</span></div>
               <div class="tl-detail-item"><span class="di">›</span><span>제보 범위 외 취약점은 이 단계에서 반려 처리되며 사유가 안내됩니다.</span></div>
@@ -709,18 +692,16 @@
         <div class="tl-item reveal reveal-delay-2">
           <div class="tl-node">
             <div class="tl-circle">03</div>
-            <div class="tl-time">D+30 이내</div>
           </div>
           <div class="tl-card">
             <div class="tl-card-header">
               <h3>취약점 검증 및 등급 결정</h3>
-              <span class="tl-status-badge badge-manual">👤 내부 평가</span>
             </div>
-            <p>보안팀이 취약점을 직접 재현하고, CVSS 점수와 실제 서비스 영향도를 종합하여 <strong>최종 심각도 등급을 확정</strong>합니다.</p>
+            <p>NCSOFT 보안팀이 취약점을 직접 재현하고, CVSS 점수와 실제 서비스 영향도를 종합하여 <strong>최종 심각도 등급을 확정</strong>합니다.</p>
             <div class="verdict-grid">
               <div class="verdict-card verdict-valid">
                 <h5>✅ 유효 판정 시</h5>
-                <p>등급 확정 후 연구자에게 결과를 안내하고 다음 단계(보상금 확정)로 진행합니다.</p>
+                <p>등급 확정 후 윤리적 해커에게 결과를 안내하고 다음 단계(보상금 확정)로 진행합니다.</p>
               </div>
               <div class="verdict-card verdict-invalid">
                 <h5>✗ 무효 판정 시</h5>
@@ -734,17 +715,14 @@
         <div class="tl-item reveal reveal-delay-3">
           <div class="tl-node">
             <div class="tl-circle">04</div>
-            <div class="tl-time">D+35 이내</div>
           </div>
           <div class="tl-card">
             <div class="tl-card-header">
               <h3>보상금 확정 및 안내</h3>
-              <span class="tl-status-badge badge-manual">👤 결정</span>
             </div>
-            <p>확정된 등급에 따른 <strong>보상금 금액이 연구자에게 통보</strong>됩니다. 이의가 있는 경우 통보일로부터 7일 이내에 재검토를 요청할 수 있습니다.</p>
+            <p>확정된 등급에 따른 <strong>보상금 금액이 윤리적 해커에게 안내</strong>됩니다.</p>
             <div class="tl-detail-list">
-              <div class="tl-detail-item"><span class="di">›</span><span>재검토 요청 시 추가 근거 자료(영향 범위 확장 증명 등)를 함께 제출해 주세요.</span></div>
-              <div class="tl-detail-item"><span class="di">›</span><span>재검토 결과는 최초 통보 후 7영업일 이내에 안내드립니다.</span></div>
+              <div class="tl-detail-item"><span class="di">›</span><span>안내 내용 여기에 작성하긔</span></div>
             </div>
           </div>
         </div>
@@ -753,39 +731,16 @@
         <div class="tl-item reveal reveal-delay-4">
           <div class="tl-node">
             <div class="tl-circle">05</div>
-            <div class="tl-time">D+45 이내</div>
           </div>
           <div class="tl-card">
             <div class="tl-card-header">
               <h3>지급 정보 수집</h3>
-              <span class="tl-status-badge badge-manual">👤 서류 제출</span>
             </div>
             <p>보상금 지급을 위해 아래 정보를 메일로 제출해 주세요. <strong>개인정보는 보상금 지급 목적으로만 사용</strong>되며 처리 후 안전하게 파기됩니다.</p>
             <div class="tl-detail-list">
               <div class="tl-detail-item"><span class="di">›</span><span><strong>개인 연구자:</strong> 성명, 생년월일, 주민등록번호 앞 7자리, 계좌번호 (은행명·예금주 포함)</span></div>
               <div class="tl-detail-item"><span class="di">›</span><span><strong>법인·팀 제보:</strong> 사업자등록번호, 법인명, 계좌번호, 세금계산서 발행 정보</span></div>
               <div class="tl-detail-item"><span class="di">›</span><span>외국인 연구자의 경우 여권 사본 및 외화 송금 계좌 정보가 필요합니다.</span></div>
-            </div>
-            <div class="payment-method-grid">
-              <div class="payment-method-card">
-                <div class="pm-icon">🏦</div>
-                <div class="pm-name">국내 계좌이체</div>
-                <div class="pm-desc">원화 계좌로 직접 입금 (가장 빠름)</div>
-              </div>
-              <div class="payment-method-card">
-                <div class="pm-icon">🌍</div>
-                <div class="pm-name">해외 송금</div>
-                <div class="pm-desc">SWIFT 코드 필요, 별도 수수료 발생 가능</div>
-              </div>
-              <div class="payment-method-card">
-                <div class="pm-icon">🧾</div>
-                <div class="pm-name">세금계산서</div>
-                <div class="pm-desc">사업자 등록 법인은 세금계산서 발행 필수</div>
-              </div>
-            </div>
-            <div class="tax-box">
-              <span class="icon">⚠️</span>
-              <p><strong>세금 안내:</strong> 보상금은 기타소득 또는 사업소득으로 분류될 수 있으며, 관련 세금(소득세·지방소득세 등)은 연구자 본인이 신고·납부할 의무가 있습니다. NCSOFT는 지급 시 법령에 따른 원천징수를 적용할 수 있습니다.</p>
             </div>
           </div>
         </div>
@@ -800,7 +755,7 @@
             <span class="complete-icon">🏆</span>
             <div>
               <h3>보상금 지급 완료</h3>
-              <p>지급 정보 확인 완료 후 <strong>영업일 기준 10일 이내</strong>에 보상금이 지급됩니다. 지급 완료 시 확인 메일이 발송되며, 연구자의 핸들명이 <strong>명예의 전당</strong>에 등록됩니다 (비공개 요청 시 제외).</p>
+              <p>지급 정보 확인 완료 후 <strong>영업일 기준 30일 이내</strong>에 보상금이 지급됩니다. 지급 완료 시 확인 메일이 발송되며, <strong>명예의 전당</strong>에 등록됩니다 (비공개 요청 시 제외).</p>
             </div>
           </div>
         </div>
